@@ -1,28 +1,28 @@
-import styled from "@emotion/styled"
+import styled from '@emotion/styled'
 
 const Error = () => {
   return (
     <ErrorWrapper>
-        <ErrorText>메인화면 데이터 불러오기에 실패했습니다</ErrorText>
-        <ErrorSubText>다시 시도해주세요!</ErrorSubText>
+      <ErrorText>메인화면 데이터 불러오기에 실패했습니다</ErrorText>
+      <ErrorSubText>다시 시도해주세요!</ErrorSubText>
     </ErrorWrapper>
   )
 }
 
 const ErrorWrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: calc(100vh - 55px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 55px);
 `
 
 const ErrorText = styled.div`
-    font-size: 18px;
+  font-size: 18px;
 `
 
 const ErrorSubText = styled.div`
-    margin-top: 8px;
+  margin-top: 8px;
 `
 
 export default Error

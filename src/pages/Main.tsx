@@ -14,8 +14,8 @@ const fetchExercise = async () => {
 
   const response = await axiosInstance.get('/api', {
     headers: {
-      'Authorization': `Bearer ${accessToken}`
-    }
+      Authorization: `Bearer ${accessToken}`,
+    },
   })
   return response.data
 }
@@ -24,7 +24,7 @@ const Main = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['main'],
     queryFn: fetchExercise,
-    retry: 1
+    retry: 1,
   })
 
   const [totalTime, setTotalTime] = useState(0)
@@ -36,19 +36,24 @@ const Main = () => {
 
   const [newDiary, setNewDiary] = useState('')
 
-  
-
   useEffect(() => {
     if (data) {
-      const { totalTime: fetchedTotalTime, exerciseList: fetchedExerciseList, diary: fetchedDiary } = data
+      const {
+        totalTime: fetchedTotalTime,
+        exerciseList: fetchedExerciseList,
+        diary: fetchedDiary,
+      } = data
 
       setTotalTime(fetchedTotalTime)
       setExerciseList(fetchedExerciseList)
       setDiary(fetchedDiary)
 
-      const activeExercise = fetchedExerciseList.find((exercise: Exercise) => exercise.isActive)
+      const activeExercise = fetchedExerciseList.find(
+        (exercise: Exercise) => exercise.isActive
+      )
       if (activeExercise && activeExercise.startTime) {
-        const elapsedTime = Date.now() - new Date(activeExercise.startTime).getTime()
+        const elapsedTime =
+          Date.now() - new Date(activeExercise.startTime).getTime()
         setTotalTime((prevTime) => prevTime + elapsedTime)
       }
     }
