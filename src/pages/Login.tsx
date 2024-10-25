@@ -1,12 +1,15 @@
 import styled from '@emotion/styled'
-
 import LOGO from '../assets/logo.png'
 import KAKAO_LOGIN from '../assets/kakao.png'
 
 const Login = () => {
-  // oauth 요청 URL
-  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=831c88c18690d9ffa567b4a7da7f8c0e&redirect_uri=http://localhost:8080/api/oauth/login
-`
+  // 카카오 OAuth 설정
+  const APP_KEY = '831c88c18690d9ffa567b4a7da7f8c0e'
+  const REDIRECT_URI = `http://localhost:3000/oauth`
+
+  // OAuth 요청 URL
+  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${APP_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`
+
   const handleLogin = () => {
     window.location.href = kakaoURL
   }
@@ -20,7 +23,7 @@ const Login = () => {
         <img src={KAKAO_LOGIN} alt="카카오 로그인" />
       </KakaoButton>
       <Describe>
-        카카오 로그인을 통해 &lsquo;홈트라이&lsquo;를 즐겨보세요
+        카카오 로그인을 통해 &lsquo;홈트라이&rsquo;를 즐겨보세요
       </Describe>
     </LoginWrapper>
   )
