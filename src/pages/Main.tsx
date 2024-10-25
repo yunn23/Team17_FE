@@ -1,50 +1,58 @@
 import styled from '@emotion/styled'
 import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import Timer from '../components/Timer'
 import ExerciseList, { Exercise } from '../components/ExerciseList'
-import mainMock from '../mocks/MainMock'
 import DiaryCreate from '../components/DiaryCreate'
 import axiosInstance from '../api/axiosInstance'
 import TodayDiary from '../components/TodayDiary'
+import Error from '../components/Error'
+import Loading from '../components/Loading'
+
+const fetchExercise = async () => {
+  const accessToken = localStorage.getItem('authToken')
+
+  const response = await axiosInstance.get('/api', {
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  })
+  return response.data
+}
 
 const Main = () => {
-  const [totalTime, setTotalTime] = useState(mainMock.totalTime)
-  const [exerciseList, setExerciseList] = useState<Exercise[]>(
-    mainMock.exerciseList
-  )
-  const [diary, setDiary] = useState(mainMock.diary)
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['main'],
+    queryFn: fetchExercise,
+    retry: 1
+  })
+
+  const [totalTime, setTotalTime] = useState(0)
+  const [exerciseList, setExerciseList] = useState<Exercise[]>([])
+  const [diary, setDiary] = useState([])
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedDate, setSelectedDate] = useState(new Date())
   const isAnyActive = exerciseList.some((exercise) => exercise.isActive)
 
   const [newDiary, setNewDiary] = useState('')
 
-  // 메인페이지 통신 코드 초안
+  
+
   useEffect(() => {
-    const fetchExercise = async () => {
-      try {
-        const response = await axiosInstance.get('/api')
-        const fetchData = response.data
+    if (data) {
+      const { totalTime: fetchedTotalTime, exerciseList: fetchedExerciseList, diary: fetchedDiary } = data
 
-        setTotalTime(fetchData.totalTime)
-        setExerciseList(fetchData.exerciseList)
-        setDiary(fetchData.diary)
+      setTotalTime(fetchedTotalTime)
+      setExerciseList(fetchedExerciseList)
+      setDiary(fetchedDiary)
 
-        const activeExercise = fetchData.find(
-          (exercise: Exercise) => exercise.isActive
-        )
-        if (activeExercise && activeExercise.startTime) {
-          const elapsedTime = Date.now() - new Date(activeExercise).getTime()
-          setTotalTime((prevTime) => prevTime + elapsedTime)
-        }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('운동 리스트 불러오기 실패', error)
+      const activeExercise = fetchedExerciseList.find((exercise: Exercise) => exercise.isActive)
+      if (activeExercise && activeExercise.startTime) {
+        const elapsedTime = Date.now() - new Date(activeExercise.startTime).getTime()
+        setTotalTime((prevTime) => prevTime + elapsedTime)
       }
     }
-
-    fetchExercise()
-  }, [])
+  }, [data])
 
   const handleDiarySubmit = async () => {
     try {
@@ -60,6 +68,8 @@ const Main = () => {
     }
   }
 
+  if (isLoading) return <Loading />
+  if (isError) return <Error />
   return (
     <MainWrapper>
       <DateContainer>
