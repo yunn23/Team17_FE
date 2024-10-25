@@ -1,54 +1,14 @@
 import styled from '@emotion/styled'
-// import { useEffect } from 'react';
-// import { useNavigate } from 'react-router';
 import LOGO from '../assets/logo.png'
 import KAKAO_LOGIN from '../assets/kakao.png'
-// import axiosInstance from '../api/axiosInstance';
 
 const Login = () => {
   // 카카오 OAuth 설정
   const APP_KEY = '831c88c18690d9ffa567b4a7da7f8c0e'
   const REDIRECT_URI = `http://localhost:3000/oauth`
 
-  // const navigate = useNavigate()
-
   // OAuth 요청 URL
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${APP_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`
-
-  // // eslint-disable-next-line no-console
-  // console.log('콘솔')
-
-  // useEffect(() => {
-  //   // 페이지가 로드된 후 텍스트 가져오기
-
-  //   const code = new URL(document.location.toString()).searchParams.get('code')
-  //   // eslint-disable-next-line no-console
-  //   console.log('code: ', code)
-
-  //   const fetchLogin = async () => {
-  //       try {
-  //           const response = await axiosInstance.get(`/api/oauth/login?code=${code}`, {
-  //           })
-  //           if (response) {
-  //               const { token } = response.data.token
-  //               localStorage.setItem('authToken', token)
-  //               // eslint-disable-next-line no-console
-  //               console.log('토큰: ', token)
-  //               navigate('/')
-  //           } else {
-  //               // eslint-disable-next-line no-console
-  //               console.log('토큰 없음')
-  //           }
-
-  //       } catch (error) {
-  //           // eslint-disable-next-line no-console
-  //           console.error('로그인 에러: ', error)
-  //       }
-  //   }
-
-  //   fetchLogin()
-
-  // }, [navigate]);
 
   const handleLogin = () => {
     window.location.href = kakaoURL
@@ -71,7 +31,6 @@ const Login = () => {
 
 export default Login
 
-// Styled Components
 const LoginWrapper = styled.div`
   display: flex;
   justify-content: center;
