@@ -1,9 +1,14 @@
 import { useNavigate } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import axiosInstance from '../api/axiosInstance'
 
-const fetchLogin = async (code: string | null): Promise<string> => {
+interface LoginResponse {
+  token: string;
+}
+
+const fetchLogin = async (code: string | null): Promise<LoginResponse> => {
   const { data } = await axiosInstance.get(`/api/oauth/login`, {
     params: {
       code,
@@ -14,7 +19,8 @@ const fetchLogin = async (code: string | null): Promise<string> => {
 
 const KakaoRedirect = () => {
   const navigate = useNavigate()
-  const code = new URL(document.location.toString()).searchParams.get('code')
+  const [searchParams] = useSearchParams()
+  const code = searchParams.get('code')
 
   const {
     data: tokenData,
@@ -30,11 +36,11 @@ const KakaoRedirect = () => {
   })
 
   useEffect(() => {
-    if (isSuccess) {
-      localStorage.setItem('authToken', tokenData)
+    if (isSuccess && tokenData) {
+      localStorage.setItem('authToken', tokenData.token)
       navigate('/')
     }
-  })
+  }, [isSuccess, navigate, tokenData])
 
   if (isLoading) return <div>로그인 중 ...</div>
   if (isError)
