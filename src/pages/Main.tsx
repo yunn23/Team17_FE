@@ -11,6 +11,7 @@ import Error from '../components/Error'
 import Loading from '../components/Loading'
 
 const fetchExercise = async () => {
+
   const accessToken = localStorage.getItem('authToken')
 
   const response = await axiosInstance.get('/api', {
@@ -35,7 +36,6 @@ const Main = () => {
   const [selectedDate, setSelectedDate] = useState(new Date())
   const isAnyActive = exerciseList.some((exercise) => exercise.isActive)
 
-  const [newDiary, setNewDiary] = useState('')
 
   const durationToMs = (duration: string) => {
     return Duration.fromISO(duration).as('milliseconds')
@@ -64,20 +64,6 @@ const Main = () => {
     }
   }, [data])
 
-  const handleDiarySubmit = async () => {
-    try {
-      const response = await axiosInstance.post('/api/diary', {
-        memo: newDiary,
-      })
-      // eslint-disable-next-line no-console
-      console.log('Diary 전송 성공', response.data)
-      setNewDiary('')
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error submitting diary:', error)
-    }
-  }
-
   if (isLoading) return <Loading />
   if (isError) return <Error />
   return (
@@ -98,11 +84,7 @@ const Main = () => {
         />
       </Container>
       <Container>
-        <DiaryCreate
-          newDiary={newDiary}
-          setNewDiary={setNewDiary}
-          onSubmit={handleDiarySubmit}
-        />
+        <DiaryCreate />
       </Container>
       <Container>
         <TodayDiary diaryData={diary} />
