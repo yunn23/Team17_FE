@@ -96,7 +96,9 @@ const NoDiaryMessage = styled.div`
   text-align: center;
   color: #888888;
   font-size: 14px;
-  margin: 30px 0;
+  margin-top: 25px;
+  margin-bottom: 30px;
+
 `
 
 export default TodayDiary

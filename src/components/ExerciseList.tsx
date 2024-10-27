@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import Modal from './Modal'
 import axiosInstance from '../api/axiosInstance'
 
@@ -19,12 +20,30 @@ interface ExerciseListProps {
   setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>
 }
 
+const postExercise = async (exerciseName: string) => {
+  const accessToken = localStorage.getItem('authToken')
+  console.log('accessToken: ', accessToken)
+
+  const response = await axiosInstance.post('/api/exercise',{
+    exerciseName
+  }, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    }
+  })
+  return response.data
+}
+
 const ExerciseList: React.FC<ExerciseListProps> = ({
   selectedDate,
   exerciseList,
   setTotalTime,
   setExerciseList,
 }) => {
+  const addExercise = useMutation({
+    mutationFn: postExercise
+  })
+
   const today = new Date()
   const isToday = selectedDate.toDateString() === today.toDateString()
 
@@ -69,16 +88,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
       })
     )
 
-    // 서버에 시작한 운동 post 코드 작성하기 (초안)
-    try {
-      const response = await axiosInstance.post(`/api/exercise/${exerciseId}`, {
-        exerciseId,
-        startTime: new Date().toISOString,
-      })
-      console.log('운동 시작 전송 성공', response.data)
-    } catch (error) {
-      console.error('운동 시작 전송 실패', error)
-    }
   }
 
   useEffect(() => {
@@ -120,9 +129,9 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     setExerciseNew('')
   }
 
-  const handleExerciseSubmit = () => {
-    // 서버로 새 운동이름 post 코드 작성
-    // console.log(exerciseNew)
+  const handleExerciseSubmit = async () => {
+    await addExercise.mutateAsync(exerciseNew)
+    console.log(exerciseNew)
     setIsModalOpen(false)
     setExerciseNew('')
   }
@@ -134,29 +143,33 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
         <AddButton onClick={handleAddClick}>+</AddButton>
       </TitleContainer>
       <ListContainer>
-        {exerciseList.map((exercise) => (
-          <ListElement
-            key={exercise.exerciseId}
-            isActive={exercise.isActive}
-            onClick={() => handleExerciseClick(exercise.exerciseId)}
-          >
-            <LeftContainer>
-              <PlayIcon className="material-symbols-outlined">
-                {exercise.isActive ? 'pause_circle' : 'play_circle'}
-              </PlayIcon>
-              <ExerciseTitle>{exercise.exerciseName}</ExerciseTitle>
-            </LeftContainer>
-            <RightContainer>
-              <ExerciseTime>{formatTime(exercise.exerciseTime)}</ExerciseTime>
-              <MenuIcon
-                className="material-symbols-outlined"
-                onClick={handleListMenuClick}
-              >
-                more_vert
-              </MenuIcon>
-            </RightContainer>
-          </ListElement>
-        ))}
+        {exerciseList.length > 0 ? (
+          exerciseList.map((exercise) => (
+            <ListElement
+              key={exercise.exerciseId}
+              isActive={exercise.isActive}
+              onClick={() => handleExerciseClick(exercise.exerciseId)}
+            >
+              <LeftContainer>
+                <PlayIcon className="material-symbols-outlined">
+                  {exercise.isActive ? 'pause_circle' : 'play_circle'}
+                </PlayIcon>
+                <ExerciseTitle>{exercise.exerciseName}</ExerciseTitle>
+              </LeftContainer>
+              <RightContainer>
+                <ExerciseTime>{formatTime(exercise.exerciseTime)}</ExerciseTime>
+                <MenuIcon
+                  className="material-symbols-outlined"
+                  onClick={handleListMenuClick}
+                >
+                  more_vert
+                </MenuIcon>
+              </RightContainer>
+            </ListElement>
+          ))
+        ): (
+            <NoExerciseMessage>운동 내역이 없습니다</NoExerciseMessage>
+        )}
       </ListContainer>
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         <AddTitle>운동이름</AddTitle>
@@ -286,6 +299,14 @@ const DoneBtn = styled.div`
   padding: 5px;
   color: #6d86cb;
   cursor: pointer;
+`
+
+const NoExerciseMessage = styled.div`
+  text-align: center;
+  color: #888888;
+  font-size: 14px;
+  margin-top: 25px;
+  margin-bottom: 30px;
 `
 
 export default ExerciseList

@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Duration } from 'luxon'
 import Timer from '../components/Timer'
 import ExerciseList, { Exercise } from '../components/ExerciseList'
 import DiaryCreate from '../components/DiaryCreate'
@@ -36,6 +37,10 @@ const Main = () => {
 
   const [newDiary, setNewDiary] = useState('')
 
+  const durationToMs = (duration: string) => {
+    return Duration.fromISO(duration).as('milliseconds')
+  }
+
   useEffect(() => {
     if (data) {
       const {
@@ -44,7 +49,7 @@ const Main = () => {
         diary: fetchedDiary,
       } = data
 
-      setTotalTime(fetchedTotalTime)
+      setTotalTime(durationToMs(fetchedTotalTime))
       setExerciseList(fetchedExerciseList)
       setDiary(fetchedDiary)
 
