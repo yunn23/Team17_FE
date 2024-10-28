@@ -8,19 +8,19 @@ import RankingMock from '../mocks/RankingMock'
 import chatbubble from '../assets/chatbubble.svg'
 import getRanking from '../api/getRanking'
 
+export const formatDuration = (isoDuration: string) => {
+  const duration = Duration.fromISO(isoDuration)
+  const hours = String(duration.hours).padStart(2, '0')
+  const minutes = String(duration.minutes).padStart(2, '0')
+  const seconds = String(duration.seconds).padStart(2, '0')
+  return `${hours}:${minutes}:${seconds}`
+}
+
 const Ranking = () => {
   const { groupId } = useParams()
 
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [rankData, setRankData] = useState(RankingMock)
-
-  const formatDuration = (isoDuration: string) => {
-    const duration = Duration.fromISO(isoDuration)
-    const hours = String(duration.hours).padStart(2, '0')
-    const minutes = String(duration.minutes).padStart(2, '0')
-    const seconds = String(duration.seconds).padStart(2, '0')
-    return `${hours}:${minutes}:${seconds}`
-  }
 
   useEffect(() => {
     const fetchRankingData = async () => {

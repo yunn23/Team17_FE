@@ -22,16 +22,16 @@ const fetchExercise = async () => {
   return response.data
 }
 
+export const durationToMs = (duration: string) => {
+  return Duration.fromISO(duration).as('milliseconds')
+}
+
 const Main = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['main'],
     queryFn: fetchExercise,
     retry: 1,
   })
-
-  const durationToMs = (duration: string) => {
-    return Duration.fromISO(duration).as('milliseconds')
-  }
 
   const [totalTime, setTotalTime] = useState(durationToMs(data?.totalTime || 'PT0S'))
   const [exerciseList, setExerciseList] = useState<Exercise[]>(data?.exerciseList || [])

@@ -1,34 +1,39 @@
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import Sneaker from '../assets/sneaker.png'
 import Personal from '../assets/personal.png'
 import getMypage from '../api/getMypage'
+import Loading from '../components/Loading'
+import Error from '../components/Error'
+import { formatDuration } from './Ranking'
 
 const MyPage = () => {
-  const [userName, setUserName] = useState('홍길동님')
-  const [userEmail, setUserEmail] = useState('gildong@gmail.com')
-  const [attendanceDay, setAttendanceDay] = useState(97)
-  const [monthlyTotal, setMonthlyTotal] = useState('42:00:08')
-  const [weeklyTotal, setWeeklyTotal] = useState('12:24:32')
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['mypage'],
+    queryFn: getMypage,
+    retry: 1
+  })
+
+  const [nickname, setNickname] = useState(data?.nickname)
+  const [email, setEmail] = useState(data?.email)
+  const [attendance, setAttendance] = useState(data?.attendance)
+  const [weeklyTotal, setWeeklyTotal] = useState(data?.weeklyTotal)
+  const [monthlyTotal, setMonthlyTotal] = useState(data?.monthlyTotal)
 
   useEffect(() => {
-    const fetchMypageData = async () => {
-      try {
-        const response = await getMypage()
-        setUserName(response.nickName)
-        setUserEmail(response.email)
-        setAttendanceDay(response.attendance)
-        setMonthlyTotal(response.weeklyTotal)
-        setWeeklyTotal(response.weeklyTotal)
-      } catch (error) {
-        // 에러 처리하기
-        // eslint-disable-next-line no-console
-        console.error('마이페이지 데이터 가져오기 실패', error)
-      }
+    if (data) {
+      setNickname(data.nickname)
+      setEmail(data.email)
+      setAttendance(data.attendance)
+      setWeeklyTotal(data.weeklyTotal)
+      setMonthlyTotal(data.monthlyTotal)
     }
+  }, [data])
 
-    fetchMypageData()
-  }, [])
+  if (isLoading) return <Loading />
+  if (isError) return <Error />
+  
 
   return (
     <MypageWrapper>
@@ -36,14 +41,14 @@ const MyPage = () => {
       <PersonalWrapper>
         <PersonalPicture src={Personal} width={90} />
         <PersonalInfo>
-          <PersonalName>{userName}</PersonalName>
-          <PersonalEmail>{userEmail}</PersonalEmail>
+          <PersonalName>{nickname}</PersonalName>
+          <PersonalEmail>{email}</PersonalEmail>
         </PersonalInfo>
       </PersonalWrapper>
       <AttendWrapper>
         <AttendIcon src={Sneaker} width={30} />
         <AttendText>
-          지금까지 <TextHighlight>{attendanceDay}</TextHighlight>일 출석하였어요
+          지금까지 <TextHighlight>{attendance}</TextHighlight>일 출석하였어요
           !
         </AttendText>
       </AttendWrapper>
@@ -56,11 +61,11 @@ const MyPage = () => {
         </StaticTitleContainer>
         <MonthlyStatic>
           <MonthlyTitle>월별 통계</MonthlyTitle>
-          <MonthlyTime>{monthlyTotal}</MonthlyTime>
+          <MonthlyTime>{formatDuration(monthlyTotal ?? '')}</MonthlyTime>
         </MonthlyStatic>
         <WeeklyStatic>
           <WeeklyTitle>주간 통계</WeeklyTitle>
-          <WeeklyTime>{weeklyTotal}</WeeklyTime>
+          <WeeklyTime>{formatDuration(weeklyTotal ?? '')}</WeeklyTime>
         </WeeklyStatic>
       </StaticWrapper>
     </MypageWrapper>
