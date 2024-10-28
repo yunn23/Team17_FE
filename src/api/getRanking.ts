@@ -5,14 +5,12 @@ interface GetRankingParams {
   page: number
   size: number
   sort: string
-  year: number
-  month: number
-  day: number
+  date: string
 }
 
 interface Ranker {
   name: string
-  time: string
+  totalExerciseTime: string
 }
 
 interface RankingResponse {
@@ -54,12 +52,15 @@ const getRanking = async ({
   page,
   size,
   sort,
-  year,
-  month,
-  day,
+  date
 }: GetRankingParams): Promise<RankingResponse> => {
+  const accessToken = localStorage.getItem('authToken')
+
   const response = await axiosInstance.get(`/api/team/${groupId}/ranking`, {
-    params: { page, size, sort, year, month, day },
+    params: { page, size, sort, date },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    }
   })
   return response.data
 }
