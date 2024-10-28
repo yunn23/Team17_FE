@@ -31,7 +31,8 @@ const Main = () => {
 
   const [totalTime, setTotalTime] = useState(0)
   const [exerciseList, setExerciseList] = useState<Exercise[]>([])
-  const [diary, setDiary] = useState([])
+  const [diary, setDiary] = useState(data?.diaries || [])
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedDate, setSelectedDate] = useState(new Date())
   const isAnyActive = exerciseList.some((exercise) => exercise.isActive)
@@ -46,7 +47,7 @@ const Main = () => {
       const {
         totalTime: fetchedTotalTime,
         exerciseList: fetchedExerciseList,
-        diary: fetchedDiary,
+        diaries: fetchedDiary,
       } = data
 
       setTotalTime(durationToMs(fetchedTotalTime))
@@ -63,6 +64,7 @@ const Main = () => {
       }
     }
   }, [data])
+
 
   if (isLoading) return <Loading />
   if (isError) return <Error />

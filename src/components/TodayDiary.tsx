@@ -1,8 +1,9 @@
 import styled from '@emotion/styled'
+import { DateTime } from 'luxon'
 
 interface DiaryData {
   id: number
-  time: string
+  createdAt: string
   memo: string
 }
 
@@ -21,10 +22,7 @@ const TodayDiary: React.FC<TodayDiaryProps> = ({ diaryData }) => {
         diaryData.map((diary) => (
           <DiaryContainer key={diary.id}>
             <DiaryTime>
-              {new Date(diary.time).toLocaleTimeString('en-GB', {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
+              {DateTime.fromISO(diary.createdAt, { zone: 'utc' }).setZone('Asia/Seoul').toFormat('HH:mm')}
             </DiaryTime>
             <DiaryContent>{diary.memo}</DiaryContent>
           </DiaryContainer>
