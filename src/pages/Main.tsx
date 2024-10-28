@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { Duration } from 'luxon'
 import Timer from '../components/Timer'
 import ExerciseList, { Exercise } from '../components/ExerciseList'
 import DiaryCreate from '../components/DiaryCreate'
@@ -10,6 +11,7 @@ import Error from '../components/Error'
 import Loading from '../components/Loading'
 
 const fetchExercise = async () => {
+
   const accessToken = localStorage.getItem('authToken')
 
   const response = await axiosInstance.get('/api', {
@@ -20,6 +22,10 @@ const fetchExercise = async () => {
   return response.data
 }
 
+export const durationToMs = (duration: string) => {
+  return Duration.fromISO(duration).as('milliseconds')
+}
+
 const Main = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['main'],
@@ -27,26 +33,25 @@ const Main = () => {
     retry: 1,
   })
 
-  const [totalTime, setTotalTime] = useState(0)
-  const [exerciseList, setExerciseList] = useState<Exercise[]>([])
-  const [diary, setDiary] = useState([])
+  const [totalTime, setTotalTime] = useState(durationToMs(data?.totalTime || 'PT0S'))
+  const [exerciseList, setExerciseList] = useState<Exercise[]>(data?.exerciseList || [])
+  const [diary, setDiary] = useState(data?.diaries || [])
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const isAnyActive = exerciseList.some((exercise) => exercise.isActive)
-
-  const [newDiary, setNewDiary] = useState('')
+  const isAnyActive = exerciseList?.some((exercise) => exercise.isActive)
 
   useEffect(() => {
     if (data) {
       const {
         totalTime: fetchedTotalTime,
         exerciseList: fetchedExerciseList,
-        diary: fetchedDiary,
+        diaries: fetchedDiary,
       } = data
 
-      setTotalTime(fetchedTotalTime)
-      setExerciseList(fetchedExerciseList)
-      setDiary(fetchedDiary)
+      setTotalTime(durationToMs(fetchedTotalTime || "PT0S"))
+      setExerciseList(fetchedExerciseList || [])
+      setDiary(fetchedDiary || [])
 
       const activeExercise = fetchedExerciseList.find(
         (exercise: Exercise) => exercise.isActive
@@ -54,24 +59,11 @@ const Main = () => {
       if (activeExercise && activeExercise.startTime) {
         const elapsedTime =
           Date.now() - new Date(activeExercise.startTime).getTime()
-        setTotalTime((prevTime) => prevTime + elapsedTime)
+        setTotalTime((prevTime: number) => prevTime + elapsedTime)
       }
     }
   }, [data])
 
-  const handleDiarySubmit = async () => {
-    try {
-      const response = await axiosInstance.post('/api/diary', {
-        memo: newDiary,
-      })
-      // eslint-disable-next-line no-console
-      console.log('Diary 전송 성공', response.data)
-      setNewDiary('')
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error submitting diary:', error)
-    }
-  }
 
   if (isLoading) return <Loading />
   if (isError) return <Error />
@@ -93,11 +85,7 @@ const Main = () => {
         />
       </Container>
       <Container>
-        <DiaryCreate
-          newDiary={newDiary}
-          setNewDiary={setNewDiary}
-          onSubmit={handleDiarySubmit}
-        />
+        <DiaryCreate />
       </Container>
       <Container>
         <TodayDiary diaryData={diary} />
