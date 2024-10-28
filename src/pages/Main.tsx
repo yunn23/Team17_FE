@@ -29,18 +29,17 @@ const Main = () => {
     retry: 1,
   })
 
-  const [totalTime, setTotalTime] = useState(0)
-  const [exerciseList, setExerciseList] = useState<Exercise[]>([])
+  const durationToMs = (duration: string) => {
+    return Duration.fromISO(duration).as('milliseconds')
+  }
+
+  const [totalTime, setTotalTime] = useState(durationToMs(data?.totalTime || 'PT0S'))
+  const [exerciseList, setExerciseList] = useState<Exercise[]>(data?.exerciseList || [])
   const [diary, setDiary] = useState(data?.diaries || [])
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const isAnyActive = exerciseList.some((exercise) => exercise.isActive)
-
-
-  const durationToMs = (duration: string) => {
-    return Duration.fromISO(duration).as('milliseconds')
-  }
+  const isAnyActive = exerciseList?.some((exercise) => exercise.isActive)
 
   useEffect(() => {
     if (data) {
@@ -50,9 +49,9 @@ const Main = () => {
         diaries: fetchedDiary,
       } = data
 
-      setTotalTime(durationToMs(fetchedTotalTime))
-      setExerciseList(fetchedExerciseList)
-      setDiary(fetchedDiary)
+      setTotalTime(durationToMs(fetchedTotalTime || "PT0S"))
+      setExerciseList(fetchedExerciseList || [])
+      setDiary(fetchedDiary || [])
 
       const activeExercise = fetchedExerciseList.find(
         (exercise: Exercise) => exercise.isActive
@@ -60,7 +59,7 @@ const Main = () => {
       if (activeExercise && activeExercise.startTime) {
         const elapsedTime =
           Date.now() - new Date(activeExercise.startTime).getTime()
-        setTotalTime((prevTime) => prevTime + elapsedTime)
+        setTotalTime((prevTime: number) => prevTime + elapsedTime)
       }
     }
   }, [data])
