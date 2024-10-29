@@ -32,7 +32,7 @@ const MyPage = () => {
   }, [data])
 
   if (isLoading) return <Loading />
-  if (isError) return <Error />
+  if (isError) return <Error name='마이페이지' />
   
 
   return (

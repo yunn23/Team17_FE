@@ -42,7 +42,7 @@ const Ranking = () => {
   }, [data])
 
   if (isLoading) return <Loading />
-  if (isError) return <Error />
+  if (isError) return <Error name='랭킹화면' />
 
   return (
     <RankingWrapper>
@@ -67,7 +67,7 @@ const Ranking = () => {
               <RankerName>{ranker.name}</RankerName>
               <RankerTime>{formatDuration(ranker.totalExerciseTime)}</RankerTime>
             </RankElement>
-          )) || <p>랭크 데이터가 존재하지 않습니다</p>}
+          )) || <Error name='랭크' />}
         </EntireRank>
       </RankContainer>
       <MyRank>
