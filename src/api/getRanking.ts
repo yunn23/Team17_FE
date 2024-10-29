@@ -10,6 +10,7 @@ interface GetRankingParams {
 
 interface Ranker {
   name: string
+  ranking: number
   totalExerciseTime: string
 }
 
@@ -17,20 +18,8 @@ interface RankingResponse {
   myRanking: number
   myNickname: string
   myTime: string
-  page: {
-    totalPages: number
-    totalElements: number
-    size: number
+  slice: {
     content: Ranker[]
-    number: number
-    sort: {
-      empty: boolean
-      sorted: boolean
-      unsorted: boolean
-    }
-    first: boolean
-    last: boolean
-    numberOfElements: number
     pageable: {
       pageNumber: number
       pageSize: number
@@ -43,6 +32,16 @@ interface RankingResponse {
       unpaged: boolean
       paged: boolean
     }
+    first: boolean
+    last: boolean
+    size: number
+    number: number
+    sort: {
+      empty: boolean
+      sorted: boolean
+      unsorted: boolean
+    }
+    numberOfElements: number
     empty: boolean
   }
 }

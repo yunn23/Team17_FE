@@ -61,13 +61,13 @@ const Ranking = () => {
           />
         </DateContainer>
         <EntireRank>
-          {rankData?.page.content.map((ranker, index) => (
+          {rankData?.slice?.content?.map((ranker, index) => (
             <RankElement key={ranker.name} index={index}>
               <RankerCount index={index}>{index + 1}</RankerCount>
               <RankerName>{ranker.name}</RankerName>
               <RankerTime>{formatDuration(ranker.totalExerciseTime)}</RankerTime>
             </RankElement>
-          ))}
+          )) || <p>랭크 데이터가 존재하지 않습니다</p>}
         </EntireRank>
       </RankContainer>
       <MyRank>
