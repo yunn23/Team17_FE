@@ -1,23 +1,27 @@
 import { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
-import DateSelect from './DateSelect'
 import { Exercise } from './ExerciseList'
-// import axiosInstance from "../api/axiosInstance";
 
 interface TimerProps {
   totalTime: number
   setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>
   isAnyActive: boolean
+  selectedDate: Date
 }
 
 const Timer: React.FC<TimerProps> = ({
   totalTime,
   setExerciseList,
   isAnyActive,
+  selectedDate
 }) => {
   const [isActive, setIsActive] = useState(false)
-  const [time, setTime] = useState(totalTime)
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [time, setTime] = useState((totalTime))
+  const [display, setDisplay] = useState(totalTime)
+
+  useEffect(() => {
+    setDisplay(totalTime)
+  }, [totalTime, display])
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined
@@ -33,13 +37,17 @@ const Timer: React.FC<TimerProps> = ({
     return () => clearInterval(interval)
   }, [isActive])
 
-  // useEffect(() => {
-  //     setTime(0)
-  //     setIsActive(false)
-  // }, [selectedDate])
+  useEffect(() => {
+      setTime(0)
+      setIsActive(false)
+  }, [selectedDate])
 
   useEffect(() => {
-    setTime(totalTime)
+    if (typeof totalTime === 'number' && !Number.isNaN(totalTime)) {
+      setTime(totalTime)
+    } else {
+      setTime(0)
+    }
   }, [totalTime])
 
   const handleStop = () => {
@@ -52,18 +60,8 @@ const Timer: React.FC<TimerProps> = ({
     })
   }
 
-  // 백엔드에서 시간 받아옴
-  // const fetchTime = async (date: Date) => {
-  //     const response = await axiosInstance.get(`/api/exercise/...`)
-  //     const serverTime = response.data.time
-  //     setTime(serverTime)
-  // };
-
-  // useEffect(() => {
-  //     fetchTime(selectedDate)
-  // }, [selectedDate])
-
   const formatTime = (runningTime: number) => {
+    if (Number.isNaN(runningTime)) return '00:00:00'
     const hours = Math.floor((runningTime / 3600000) % 24)
     const minutes = Math.floor((runningTime / 60000) % 60)
     const seconds = Math.floor((runningTime / 1000) % 60)
@@ -72,10 +70,6 @@ const Timer: React.FC<TimerProps> = ({
 
   return (
     <div>
-      <DateSelect
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-      />
       <TimerContainer>
         <TimerContent>{formatTime(time)}</TimerContent>
       </TimerContainer>
