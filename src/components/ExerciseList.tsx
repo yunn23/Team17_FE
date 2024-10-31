@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
@@ -78,6 +77,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
           })
         )
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('운동 시작 요청 실패:', error)
       }
     }
@@ -124,7 +124,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const handleExerciseSubmit = async () => {
     await addExercise.mutateAsync(exerciseNew)
-    console.log(exerciseNew)
     setIsModalOpen(false)
     setExerciseNew('')
   }
