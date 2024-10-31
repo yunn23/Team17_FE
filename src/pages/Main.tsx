@@ -93,7 +93,6 @@ const Main = () => {
       </DateContainer>
       <Container>
         <ExerciseList
-          selectedDate={selectedDate}
           exerciseList={exerciseList}
           setTotalTime={setTotalTime}
           setExerciseList={setExerciseList}

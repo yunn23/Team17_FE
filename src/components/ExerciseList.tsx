@@ -15,14 +15,12 @@ export interface Exercise {
 }
 
 interface ExerciseListProps {
-  selectedDate: Date
   exerciseList: Exercise[]
   setTotalTime: (time: number) => void
   setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>
 }
 
 const ExerciseList: React.FC<ExerciseListProps> = ({
-  selectedDate,
   exerciseList,
   setTotalTime,
   setExerciseList,
@@ -35,9 +33,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     mutationFn: postStartExercise,
   })
 
-  const today = new Date()
-  const isToday = selectedDate.toDateString() === today.toDateString()
-
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [exerciseNew, setExerciseNew] = useState('')
 
@@ -48,12 +43,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   }
 
   useEffect(() => {
-    if (!isToday) {
-      // 오늘이 아니라면 해당 날짜의 exerciseList 출력
-    }
-  }, [isToday])
-
-  useEffect(() => {
     // exerciseList가 변경될 때마다 전체 시간 업데이트
     const totalTime = exerciseList.reduce(
       (total, exercise) => total + exercise.exerciseTime,
@@ -62,22 +51,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     setTotalTime(totalTime)
   }, [exerciseList, setTotalTime])
 
-  // const handleExerciseClick = async (exerciseId: number) => {
-  //   const activeExercise = exerciseList.some((exercise) => exercise.isActive)
-
-  //   // 다른 운동을 하고 있는 경우, 아무것도 하지 않음
-  //   if (activeExercise) return
-
-  //   setExerciseList((prevList) =>
-  //     prevList.map((exercise) => {
-  //       if (exercise.exerciseId === exerciseId) {
-  //         await startExercise.mutateAsync(exerciseId)
-  //         return { ...exercise, isActive: true }
-  //       }
-  //         return exercise
-  //     })
-  //   )
-  // }
 
   const handleExerciseClick = async (exerciseId: number) => {
     const activeExercise = exerciseList.some((exercise) => exercise.isActive)
