@@ -21,7 +21,6 @@ interface ExerciseListProps {
   setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>
 }
 
-
 const ExerciseList: React.FC<ExerciseListProps> = ({
   selectedDate,
   exerciseList,
@@ -29,11 +28,11 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   setExerciseList,
 }) => {
   const addExercise = useMutation({
-    mutationFn: postExercise
+    mutationFn: postExercise,
   })
 
   const startExercise = useMutation({
-    mutationFn: postStartExercise
+    mutationFn: postStartExercise,
   })
 
   const today = new Date()
@@ -74,7 +73,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   //       if (exercise.exerciseId === exerciseId) {
   //         await startExercise.mutateAsync(exerciseId)
   //         return { ...exercise, isActive: true }
-  //       } 
+  //       }
   //         return exercise
   //     })
   //   )
@@ -82,29 +81,31 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const handleExerciseClick = async (exerciseId: number) => {
     const activeExercise = exerciseList.some((exercise) => exercise.isActive)
-  
+
     // 다른 운동을 하고 있는 경우, 아무것도 하지 않음
     if (activeExercise) return
-  
+
     // 클릭한 운동을 찾습니다.
-    const exerciseToStart = exerciseList.find((exercise) => exercise.exerciseId === exerciseId);
-  
+    const exerciseToStart = exerciseList.find(
+      (exercise) => exercise.exerciseId === exerciseId
+    )
+
     if (exerciseToStart) {
       try {
         // 운동 시작 요청
-        await startExercise.mutateAsync(exerciseId);
-        
+        await startExercise.mutateAsync(exerciseId)
+
         // 상태 업데이트
         setExerciseList((prevList) =>
           prevList.map((exercise) => {
             if (exercise.exerciseId === exerciseId) {
               return { ...exercise, isActive: true }
-            } 
+            }
             return exercise
           })
-        );
+        )
       } catch (error) {
-        console.error('운동 시작 요청 실패:', error);
+        console.error('운동 시작 요청 실패:', error)
       }
     }
   }
@@ -186,8 +187,8 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
               </RightContainer>
             </ListElement>
           ))
-        ): (
-            <NoExerciseMessage>운동 내역이 없습니다</NoExerciseMessage>
+        ) : (
+          <NoExerciseMessage>운동 내역이 없습니다</NoExerciseMessage>
         )}
       </ListContainer>
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>

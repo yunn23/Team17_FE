@@ -7,7 +7,9 @@ const axiosInstance = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-export const setupAxiosInterceptor = (navigate: ReturnType<typeof useNavigate>) => {
+export const setupAxiosInterceptor = (
+  navigate: ReturnType<typeof useNavigate>
+) => {
   axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {

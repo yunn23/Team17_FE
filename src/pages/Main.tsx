@@ -17,7 +17,9 @@ const Main = () => {
   const [diary, setDiary] = useState([])
 
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const [formattedDate, setFormattedDate] = useState(DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd'))
+  const [formattedDate, setFormattedDate] = useState(
+    DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
+  )
 
   useEffect(() => {
     const newFormat = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
@@ -25,16 +27,15 @@ const Main = () => {
   }, [selectedDate])
 
   const fetchExercise = useCallback(async () => {
-
     const accessToken = localStorage.getItem('authToken')
-  
+
     const response = await axiosInstance.get('/api', {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
       params: {
-        date: formattedDate
-      }
+        date: formattedDate,
+      },
     })
     return response.data
   }, [formattedDate])
@@ -73,7 +74,7 @@ const Main = () => {
   const activeExercise = exerciseList.find((exercise) => exercise.isActive)
 
   if (isLoading) return <Loading />
-  if (isError) return <Error name='메인화면' />
+  if (isError) return <Error name="메인화면" />
 
   return (
     <MainWrapper>
@@ -87,7 +88,7 @@ const Main = () => {
           setExerciseList={setExerciseList}
           isAnyActive={isAnyActive}
           selectedDate={selectedDate}
-          activeExerciseId = {activeExercise?.exerciseId}
+          activeExerciseId={activeExercise?.exerciseId}
         />
       </DateContainer>
       <Container>

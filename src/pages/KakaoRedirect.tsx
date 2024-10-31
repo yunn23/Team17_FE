@@ -4,7 +4,6 @@ import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import axiosInstance from '../api/axiosInstance'
 
-
 const fetchLogin = async (code: string | null): Promise<string> => {
   const { data } = await axiosInstance.get(`/api/oauth/login`, {
     params: {
@@ -38,7 +37,6 @@ const KakaoRedirect = () => {
       navigate('/')
     }
   }, [isSuccess, navigate, tokenData])
-
 
   if (isLoading) return <div>로그인 중 ...</div>
   if (isError)

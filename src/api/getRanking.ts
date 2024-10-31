@@ -51,7 +51,7 @@ const getRanking = async ({
   page,
   size,
   sort,
-  date
+  date,
 }: GetRankingParams): Promise<RankingResponse> => {
   const accessToken = localStorage.getItem('authToken')
 
@@ -59,7 +59,7 @@ const getRanking = async ({
     params: { page, size, sort, date },
     headers: {
       Authorization: `Bearer ${accessToken}`,
-    }
+    },
   })
   return response.data
 }

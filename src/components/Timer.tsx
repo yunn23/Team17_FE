@@ -17,16 +17,14 @@ const Timer: React.FC<TimerProps> = ({
   setExerciseList,
   isAnyActive,
   selectedDate,
-  activeExerciseId
+  activeExerciseId,
 }) => {
-
-  useEffect(() => {
-  }, [totalTime])
+  useEffect(() => {}, [totalTime])
 
   const stopExercise = useMutation({
-    mutationFn: putStopExercise
+    mutationFn: putStopExercise,
   })
-  
+
   const [isActive, setIsActive] = useState(false)
   const [time, setTime] = useState(totalTime)
 
@@ -37,7 +35,6 @@ const Timer: React.FC<TimerProps> = ({
       setTime(0)
     }
   }, [totalTime])
-
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined
@@ -54,8 +51,8 @@ const Timer: React.FC<TimerProps> = ({
   }, [isActive])
 
   useEffect(() => {
-      setTime(0)
-      setIsActive(false)
+    setTime(0)
+    setIsActive(false)
   }, [selectedDate])
 
   useEffect(() => {

@@ -25,14 +25,15 @@ const Ranking = () => {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['ranking', groupId],
-    queryFn: () => getRanking({
-      groupId: groupId || '',
-      page: 0,
-      size: 8,
-      sort: 'time,asc',
-      date: formattedDate
-    }),
-    retry: 1
+    queryFn: () =>
+      getRanking({
+        groupId: groupId || '',
+        page: 0,
+        size: 8,
+        sort: 'time,asc',
+        date: formattedDate,
+      }),
+    retry: 1,
   })
 
   const [rankData, setRankData] = useState(data)
@@ -42,7 +43,7 @@ const Ranking = () => {
   }, [data])
 
   if (isLoading) return <Loading />
-  if (isError) return <Error name='랭킹화면' />
+  if (isError) return <Error name="랭킹화면" />
 
   return (
     <RankingWrapper>
@@ -65,20 +66,22 @@ const Ranking = () => {
             <RankElement key={ranker.name} index={index}>
               <RankerCount index={index}>{index + 1}</RankerCount>
               <RankerName>{ranker.name}</RankerName>
-              <RankerTime>{formatDuration(ranker.totalExerciseTime)}</RankerTime>
+              <RankerTime>
+                {formatDuration(ranker.totalExerciseTime)}
+              </RankerTime>
             </RankElement>
-          )) || <Error name='랭크' />}
+          )) || <Error name="랭크" />}
         </EntireRank>
       </RankContainer>
       <MyRank>
         {rankData?.myRanking && (
           <MyRankElement ranking={rankData.myRanking}>
-          <MyRankerCount ranking={rankData.myRanking}>
-            {rankData.myRanking}
-          </MyRankerCount>
-          <RankerName>{rankData.myNickname}</RankerName>
-          <RankerTime>{formatDuration(rankData.myTime)}</RankerTime>
-        </MyRankElement>
+            <MyRankerCount ranking={rankData.myRanking}>
+              {rankData.myRanking}
+            </MyRankerCount>
+            <RankerName>{rankData.myNickname}</RankerName>
+            <RankerTime>{formatDuration(rankData.myTime)}</RankerTime>
+          </MyRankElement>
         )}
       </MyRank>
       <Link to={`/chat/${groupId}`}>

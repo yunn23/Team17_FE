@@ -12,7 +12,7 @@ const MyPage = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['mypage'],
     queryFn: getMypage,
-    retry: 1
+    retry: 1,
   })
 
   const [nickname, setNickname] = useState(data?.nickname)
@@ -32,8 +32,7 @@ const MyPage = () => {
   }, [data])
 
   if (isLoading) return <Loading />
-  if (isError) return <Error name='마이페이지' />
-  
+  if (isError) return <Error name="마이페이지" />
 
   return (
     <MypageWrapper>
@@ -49,8 +48,7 @@ const MyPage = () => {
       <AttendWrapper>
         <AttendIcon src={Sneaker} width={30} />
         <AttendText>
-          지금까지 <TextHighlight>{attendance}</TextHighlight>일 출석하였어요
-          !
+          지금까지 <TextHighlight>{attendance}</TextHighlight>일 출석하였어요 !
         </AttendText>
       </AttendWrapper>
       <StaticWrapper>
@@ -128,7 +126,7 @@ const ExitMember = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
-  color: #69779F;
+  color: #69779f;
   margin-top: 18px;
   text-decoration: underline;
 `
@@ -190,7 +188,7 @@ const MonthlyTitle = styled.div`
 `
 
 const MonthlyTime = styled.div`
-  color: #6D86CB
+  color: #6d86cb;
 `
 
 const WeeklyStatic = styled.div`
@@ -206,7 +204,7 @@ const WeeklyTitle = styled.div`
 `
 
 const WeeklyTime = styled.div`
-  color: #6D86CB
+  color: #6d86cb;
 `
 
 export default MyPage
