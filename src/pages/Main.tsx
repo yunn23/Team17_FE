@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { useState, useEffect, useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { DateTime, Duration } from 'luxon'
+import { DateTime } from 'luxon'
 import Timer from '../components/Timer'
 import ExerciseList, { Exercise } from '../components/ExerciseList'
 import DiaryCreate from '../components/DiaryCreate'
@@ -10,18 +10,6 @@ import TodayDiary from '../components/TodayDiary'
 import Error from '../components/Error'
 import Loading from '../components/Loading'
 import DateSelect from '../components/DateSelect'
-
-export const durationToMs = (duration: string) => {
-  
-  if (!duration || duration === 'PT0S') return 0
-  const dur = Duration.fromISO(duration)
-  
-  if (!dur.isValid) {
-    
-    return 0
-  }
-  return dur.as('milliseconds')
-}
 
 const Main = () => {
   const [totalTime, setTotalTime] = useState(0)
@@ -61,27 +49,33 @@ const Main = () => {
 
   useEffect(() => {
     if (data) {
-      const fetchedTotalTime = durationToMs(data?.totalTime)
-      const fetchedExerciseList = data?.exerciseList
-      const fetchedDiary = data?.diaries
+      const fetchedTotalTime = data?.totalTime || 0
+      console.log('서버에서 받아온 totalTime: ', data.totalTime)
+      console.log('ms로 변환된 totalTime: ', fetchedTotalTime)
+      const fetchedExerciseList = data?.exerciseList || []
+      const fetchedDiary = data?.diaries || []
 
-      setTotalTime(fetchedTotalTime)
+      console.log('main에서 totalTime 세팅: ', fetchedTotalTime)
+      setTotalTime(Number(fetchedTotalTime))
       setExerciseList(fetchedExerciseList)
       setDiary(fetchedDiary)
-
-      const activeExercise = fetchedExerciseList.find(
-        (exercise: Exercise) => exercise.isActive
-      )
-      if (activeExercise && activeExercise.startTime) {
-        const elapsedTime =
-          Date.now() - new Date(activeExercise.startTime).getTime()
-        setTotalTime((prevTime: number) => prevTime + elapsedTime)
-      }
     }
   }, [data])
 
+  useEffect(() => {
+    const activeExercise = exerciseList.find(
+      (exercise: Exercise) => exercise.isActive
+    )
+    if (activeExercise && activeExercise.startTime) {
+      const elapsedTime =
+        Date.now() - new Date(activeExercise.startTime).getTime()
+      setTotalTime((prevTime: number) => prevTime + elapsedTime)
+    }
+  }, [exerciseList])
+
   if (isLoading) return <Loading />
   if (isError) return <Error name='메인화면' />
+  
   return (
     <MainWrapper>
       <DateContainer>

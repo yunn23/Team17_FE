@@ -15,13 +15,22 @@ const Timer: React.FC<TimerProps> = ({
   isAnyActive,
   selectedDate
 }) => {
-  const [isActive, setIsActive] = useState(false)
-  const [time, setTime] = useState((totalTime))
-  const [display, setDisplay] = useState(totalTime)
 
   useEffect(() => {
-    setDisplay(totalTime)
-  }, [totalTime, display])
+    console.log('Timer props로 전달된 totalTime: ', totalTime)
+  }, [totalTime])
+  
+  const [isActive, setIsActive] = useState(false)
+  const [time, setTime] = useState(totalTime)
+
+  useEffect(() => {
+    if (typeof totalTime === 'number' && !Number.isNaN(totalTime)) {
+      setTime(totalTime)
+    } else {
+      setTime(0)
+    }
+  }, [totalTime])
+
 
   useEffect(() => {
     let interval: NodeJS.Timeout | undefined
@@ -48,7 +57,7 @@ const Timer: React.FC<TimerProps> = ({
     } else {
       setTime(0)
     }
-  }, [totalTime])
+  }, [totalTime, selectedDate])
 
   const handleStop = () => {
     setIsActive(false)
