@@ -22,12 +22,16 @@ const TodayDiary: React.FC<TodayDiaryProps> = ({ diaryData }) => {
         diaryData.map((diary) => (
           <DiaryContainer key={diary.id}>
             <DiaryTime>
-              {DateTime.fromISO(diary.createdAt, { zone: 'utc' }).setZone('Asia/Seoul').toFormat('HH:mm')}
+              {DateTime.fromISO(diary.createdAt, { zone: 'utc' })
+                .setZone('Asia/Seoul')
+                .toFormat('HH:mm')}
             </DiaryTime>
             <DiaryContent>{diary.memo}</DiaryContent>
           </DiaryContainer>
         ))
-      ) : <NoDiaryMessage>오늘의 일기가 없습니다</NoDiaryMessage>}
+      ) : (
+        <NoDiaryMessage>오늘의 일기가 없습니다</NoDiaryMessage>
+      )}
       {}
     </TodayDiaryWrapper>
   )
@@ -96,7 +100,6 @@ const NoDiaryMessage = styled.div`
   font-size: 14px;
   margin-top: 25px;
   margin-bottom: 30px;
-
 `
 
 export default TodayDiary

@@ -6,17 +6,20 @@ import Modal from './Modal'
 
 const postDiary = async (memo: string) => {
   const accessToken = localStorage.getItem('authToken')
-  
-  const response = await axiosInstance.post('/api/diary',{
-    memo
-  }, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+
+  const response = await axiosInstance.post(
+    '/api/diary',
+    {
+      memo,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     }
-  })
+  )
   return response.data
 }
-
 
 const DiaryCreate = () => {
   const [newDiary, setNewDiary] = useState('')
@@ -26,7 +29,7 @@ const DiaryCreate = () => {
     mutationFn: postDiary,
     onSuccess: () => {
       setNewDiary('')
-    }
+    },
   })
 
   const onSubmit = () => {
@@ -39,7 +42,6 @@ const DiaryCreate = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
-
   }
 
   return (
@@ -59,7 +61,7 @@ const DiaryCreate = () => {
           <AlertText>일기를 작성해주세요!</AlertText>
         </ModalText>
         <ModalBtnContainer>
-         <DoneBtn onClick={handleCloseModal}>확인</DoneBtn>
+          <DoneBtn onClick={handleCloseModal}>확인</DoneBtn>
         </ModalBtnContainer>
       </Modal>
     </DiaryCreateWrapper>
@@ -105,7 +107,7 @@ const ModalText = styled.div`
 `
 
 const AlertText = styled.div`
-  color: #4A4A4A;
+  color: #4a4a4a;
   text-align: center;
   margin-top: 5px;
 `

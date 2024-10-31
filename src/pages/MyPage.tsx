@@ -12,7 +12,7 @@ const MyPage = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['mypage'],
     queryFn: getMypage,
-    retry: 1
+    retry: 1,
   })
 
   const [nickname, setNickname] = useState(data?.nickname)
@@ -32,8 +32,7 @@ const MyPage = () => {
   }, [data])
 
   if (isLoading) return <Loading />
-  if (isError) return <Error />
-  
+  if (isError) return <Error name="마이페이지" />
 
   return (
     <MypageWrapper>
@@ -43,13 +42,13 @@ const MyPage = () => {
         <PersonalInfo>
           <PersonalName>{nickname}</PersonalName>
           <PersonalEmail>{email}</PersonalEmail>
+          <ExitMember>회원 탈퇴하기</ExitMember>
         </PersonalInfo>
       </PersonalWrapper>
       <AttendWrapper>
         <AttendIcon src={Sneaker} width={30} />
         <AttendText>
-          지금까지 <TextHighlight>{attendance}</TextHighlight>일 출석하였어요
-          !
+          지금까지 <TextHighlight>{attendance}</TextHighlight>일 출석하였어요 !
         </AttendText>
       </AttendWrapper>
       <StaticWrapper>
@@ -94,7 +93,7 @@ const MypageTitle = styled.div`
 const PersonalWrapper = styled.div`
   border-radius: 10px;
   border: 2px solid #b5c3e9;
-  padding: 20px;
+  padding: 20px 17px 10px 20px;
   display: flex;
   flex-direction: row;
   background: linear-gradient(180deg, #f8fdff 0%, #d7e0ff 100%);
@@ -103,15 +102,18 @@ const PersonalWrapper = styled.div`
 const PersonalPicture = styled.img`
   margin-right: 25px;
   margin-left: 5px;
+  margin-bottom: 10px;
 `
 
-const PersonalInfo = styled.div``
+const PersonalInfo = styled.div`
+  width: 100%;
+`
 
 const PersonalName = styled.div`
   font-size: 20px;
   font-weight: 500;
-  margin-bottom: 10px;
-  margin-top: 10px;
+  margin-bottom: 7px;
+  margin-top: 8px;
 `
 
 const PersonalEmail = styled.div`
@@ -119,10 +121,20 @@ const PersonalEmail = styled.div`
   color: #8e8e8e;
 `
 
+const ExitMember = styled.div`
+  font-size: 12px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  color: #69779f;
+  margin-top: 18px;
+  text-decoration: underline;
+`
+
 const AttendWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  font-size: 18px;
+  font-size: 19px;
   align-items: center;
   justify-content: center;
   padding: 35px 0;
@@ -168,25 +180,31 @@ const MonthlyStatic = styled.div`
   flex-direction: row;
   justify-content: space-between;
   margin: 10px 0;
-  color: #6f6f6f;
   font-size: 18px;
 `
 
-const MonthlyTitle = styled.div``
+const MonthlyTitle = styled.div`
+  color: #6f6f6f;
+`
 
-const MonthlyTime = styled.div``
+const MonthlyTime = styled.div`
+  color: #6d86cb;
+`
 
 const WeeklyStatic = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   margin: 10px 0;
-  color: #6f6f6f;
   font-size: 18px;
 `
 
-const WeeklyTitle = styled.div``
+const WeeklyTitle = styled.div`
+  color: #6f6f6f;
+`
 
-const WeeklyTime = styled.div``
+const WeeklyTime = styled.div`
+  color: #6d86cb;
+`
 
 export default MyPage
