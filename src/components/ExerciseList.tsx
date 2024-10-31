@@ -24,6 +24,26 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   setTotalTime,
   setExerciseList,
 }) => {
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [exerciseNew, setExerciseNew] = useState('')
+  const [acitveMenuId, setActiveMemuId] = useState<number | null>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+
+      if (!target.closest('.menu-icon') && !target.closest('.menu-container')) {
+        setActiveMemuId(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [acitveMenuId])
+
   const addExercise = useMutation({
     mutationFn: postExercise,
   })
@@ -31,9 +51,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   const startExercise = useMutation({
     mutationFn: postStartExercise,
   })
-
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [exerciseNew, setExerciseNew] = useState('')
 
   const handleExerciseNewChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -57,7 +74,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     // 다른 운동을 하고 있는 경우, 아무것도 하지 않음
     if (activeExercise) return
 
-    // 클릭한 운동을 찾습니다.
+    // 클릭한 운동 찾기
     const exerciseToStart = exerciseList.find(
       (exercise) => exercise.exerciseId === exerciseId
     )
@@ -100,8 +117,14 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     return () => clearInterval(interval)
   }, [exerciseList, setExerciseList])
 
-  const handleListMenuClick = (event: React.MouseEvent) => {
+  const handleListMenuClick = ( exerciseId: number) => (event: React.MouseEvent) => {
     event?.stopPropagation()
+
+    if (acitveMenuId !== exerciseId) {
+      setActiveMemuId(exerciseId)
+    } else {
+      setActiveMemuId(null)
+    }
   }
 
   const formatTime = (timeInMillis: number) => {
@@ -152,10 +175,15 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                 <ExerciseTime>{formatTime(exercise.exerciseTime)}</ExerciseTime>
                 <MenuIcon
                   className="material-symbols-outlined"
-                  onClick={handleListMenuClick}
+                  onClick={handleListMenuClick(exercise.exerciseId)}
                 >
                   more_vert
                 </MenuIcon>
+                {acitveMenuId === exercise.exerciseId && (
+                  <MenuContainer>
+                    <DeleteBtn>운동 삭제하기</DeleteBtn>
+                  </MenuContainer>
+                )}
               </RightContainer>
             </ListElement>
           ))
@@ -232,6 +260,7 @@ const RightContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  position: relative;
 `
 
 const PlayIcon = styled.div`
@@ -255,6 +284,26 @@ const MenuIcon = styled.div`
   color: #828282;
   font-weight: 300;
   padding: 0 0 0 10px;
+`
+
+const MenuContainer = styled.div`
+  border: 2px solid #A1B6E8;
+  border-radius: 10px;
+  width: 100px;
+  height: 30px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  background-color: #F2F7FF;
+`
+
+const DeleteBtn = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #868686;
 `
 
 const AddTitle = styled.div`
