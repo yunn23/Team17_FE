@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 import Modal from './Modal'
 import postExercise from '../api/postExercise'
 import postStartExercise from '../api/postStartExercise'
+import deleteExerciseApi from '../api/deleteExerciseApi'
 
 export interface Exercise {
   exerciseId: number
@@ -24,7 +25,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   setTotalTime,
   setExerciseList,
 }) => {
-
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [exerciseNew, setExerciseNew] = useState('')
   const [acitveMenuId, setActiveMemuId] = useState<number | null>(null)
@@ -52,6 +52,10 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     mutationFn: postStartExercise,
   })
 
+  const deleteExercise = useMutation({
+    mutationFn: deleteExerciseApi,
+  })
+
   const handleExerciseNewChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -66,7 +70,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     )
     setTotalTime(totalTime)
   }, [exerciseList, setTotalTime])
-
 
   const handleExerciseClick = async (exerciseId: number) => {
     const activeExercise = exerciseList.some((exercise) => exercise.isActive)
@@ -117,15 +120,16 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     return () => clearInterval(interval)
   }, [exerciseList, setExerciseList])
 
-  const handleListMenuClick = ( exerciseId: number) => (event: React.MouseEvent) => {
-    event?.stopPropagation()
+  const handleListMenuClick =
+    (exerciseId: number) => (event: React.MouseEvent) => {
+      event?.stopPropagation()
 
-    if (acitveMenuId !== exerciseId) {
-      setActiveMemuId(exerciseId)
-    } else {
-      setActiveMemuId(null)
+      if (acitveMenuId !== exerciseId) {
+        setActiveMemuId(exerciseId)
+      } else {
+        setActiveMemuId(null)
+      }
     }
-  }
 
   const formatTime = (timeInMillis: number) => {
     const totalSeconds = Math.floor(timeInMillis / 1000)
@@ -181,7 +185,11 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                 </MenuIcon>
                 {acitveMenuId === exercise.exerciseId && (
                   <MenuContainer>
-                    <DeleteBtn>운동 삭제하기</DeleteBtn>
+                    <DeleteBtn
+                      onClick={() => deleteExercise.mutate(exercise.exerciseId)}
+                    >
+                      운동 삭제하기
+                    </DeleteBtn>
                   </MenuContainer>
                 )}
               </RightContainer>
@@ -287,14 +295,14 @@ const MenuIcon = styled.div`
 `
 
 const MenuContainer = styled.div`
-  border: 2px solid #A1B6E8;
+  border: 2px solid #a1b6e8;
   border-radius: 10px;
   width: 100px;
   height: 30px;
   display: flex;
   flex-direction: column;
   position: absolute;
-  background-color: #F2F7FF;
+  background-color: #f2f7ff;
 `
 
 const DeleteBtn = styled.div`
