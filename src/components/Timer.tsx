@@ -1,24 +1,31 @@
 import { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
+import { useMutation } from '@tanstack/react-query'
 import { Exercise } from './ExerciseList'
+import putStopExercise from '../api/putStopExercise'
 
 interface TimerProps {
   totalTime: number
   setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>
   isAnyActive: boolean
   selectedDate: Date
+  activeExerciseId?: number
 }
 
 const Timer: React.FC<TimerProps> = ({
   totalTime,
   setExerciseList,
   isAnyActive,
-  selectedDate
+  selectedDate,
+  activeExerciseId
 }) => {
 
   useEffect(() => {
-    console.log('Timer props로 전달된 totalTime: ', totalTime)
   }, [totalTime])
+
+  const stopExercise = useMutation({
+    mutationFn: putStopExercise
+  })
   
   const [isActive, setIsActive] = useState(false)
   const [time, setTime] = useState(totalTime)
@@ -67,6 +74,9 @@ const Timer: React.FC<TimerProps> = ({
         isActive: false,
       }))
     })
+    if (activeExerciseId) {
+      stopExercise.mutate(activeExerciseId)
+    }
   }
 
   const formatTime = (runningTime: number) => {

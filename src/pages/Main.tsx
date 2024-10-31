@@ -50,12 +50,9 @@ const Main = () => {
   useEffect(() => {
     if (data) {
       const fetchedTotalTime = data?.totalTime || 0
-      console.log('서버에서 받아온 totalTime: ', data.totalTime)
-      console.log('ms로 변환된 totalTime: ', fetchedTotalTime)
       const fetchedExerciseList = data?.exerciseList || []
       const fetchedDiary = data?.diaries || []
 
-      console.log('main에서 totalTime 세팅: ', fetchedTotalTime)
       setTotalTime(Number(fetchedTotalTime))
       setExerciseList(fetchedExerciseList)
       setDiary(fetchedDiary)
@@ -73,9 +70,11 @@ const Main = () => {
     }
   }, [exerciseList])
 
+  const activeExercise = exerciseList.find((exercise) => exercise.isActive)
+
   if (isLoading) return <Loading />
   if (isError) return <Error name='메인화면' />
-  
+
   return (
     <MainWrapper>
       <DateContainer>
@@ -88,6 +87,7 @@ const Main = () => {
           setExerciseList={setExerciseList}
           isAnyActive={isAnyActive}
           selectedDate={selectedDate}
+          activeExerciseId = {activeExercise?.exerciseId}
         />
       </DateContainer>
       <Container>
