@@ -24,13 +24,17 @@ const postExercise = async (exerciseName: string) => {
   const accessToken = localStorage.getItem('authToken')
   console.log('accessToken: ', accessToken)
 
-  const response = await axiosInstance.post('/api/exercise',{
-    exerciseName
-  }, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
+  const response = await axiosInstance.post(
+    '/api/exercise',
+    {
+      exerciseName,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     }
-  })
+  )
   return response.data
 }
 
@@ -41,7 +45,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   setExerciseList,
 }) => {
   const addExercise = useMutation({
-    mutationFn: postExercise
+    mutationFn: postExercise,
   })
 
   const today = new Date()
@@ -87,7 +91,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
           : exercise
       })
     )
-
   }
 
   useEffect(() => {
@@ -167,8 +170,8 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
               </RightContainer>
             </ListElement>
           ))
-        ): (
-            <NoExerciseMessage>운동 내역이 없습니다</NoExerciseMessage>
+        ) : (
+          <NoExerciseMessage>운동 내역이 없습니다</NoExerciseMessage>
         )}
       </ListContainer>
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>

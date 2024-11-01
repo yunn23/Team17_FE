@@ -12,7 +12,7 @@ const MyPage = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['mypage'],
     queryFn: getMypage,
-    retry: 1
+    retry: 1,
   })
 
   const [nickname, setNickname] = useState(data?.nickname)
@@ -33,7 +33,6 @@ const MyPage = () => {
 
   if (isLoading) return <Loading />
   if (isError) return <Error />
-  
 
   return (
     <MypageWrapper>
@@ -48,8 +47,7 @@ const MyPage = () => {
       <AttendWrapper>
         <AttendIcon src={Sneaker} width={30} />
         <AttendText>
-          지금까지 <TextHighlight>{attendance}</TextHighlight>일 출석하였어요
-          !
+          지금까지 <TextHighlight>{attendance}</TextHighlight>일 출석하였어요 !
         </AttendText>
       </AttendWrapper>
       <StaticWrapper>

@@ -11,7 +11,6 @@ import Error from '../components/Error'
 import Loading from '../components/Loading'
 
 const fetchExercise = async () => {
-
   const accessToken = localStorage.getItem('authToken')
 
   const response = await axiosInstance.get('/api', {
@@ -33,8 +32,12 @@ const Main = () => {
     retry: 1,
   })
 
-  const [totalTime, setTotalTime] = useState(durationToMs(data?.totalTime || 'PT0S'))
-  const [exerciseList, setExerciseList] = useState<Exercise[]>(data?.exerciseList || [])
+  const [totalTime, setTotalTime] = useState(
+    durationToMs(data?.totalTime || 'PT0S')
+  )
+  const [exerciseList, setExerciseList] = useState<Exercise[]>(
+    data?.exerciseList || []
+  )
   const [diary, setDiary] = useState(data?.diaries || [])
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -49,7 +52,7 @@ const Main = () => {
         diaries: fetchedDiary,
       } = data
 
-      setTotalTime(durationToMs(fetchedTotalTime || "PT0S"))
+      setTotalTime(durationToMs(fetchedTotalTime || 'PT0S'))
       setExerciseList(fetchedExerciseList || [])
       setDiary(fetchedDiary || [])
 
@@ -63,7 +66,6 @@ const Main = () => {
       }
     }
   }, [data])
-
 
   if (isLoading) return <Loading />
   if (isError) return <Error />
