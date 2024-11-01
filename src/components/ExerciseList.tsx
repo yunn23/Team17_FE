@@ -1,9 +1,10 @@
-/* eslint-disable no-console */
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import Modal from './Modal'
-import axiosInstance from '../api/axiosInstance'
+import postExercise from '../api/postExercise'
+import postStartExercise from '../api/postStartExercise'
+import deleteExerciseApi from '../api/deleteExerciseApi'
 
 export interface Exercise {
   exerciseId: number
@@ -14,57 +15,59 @@ export interface Exercise {
 }
 
 interface ExerciseListProps {
-  selectedDate: Date
   exerciseList: Exercise[]
   setTotalTime: (time: number) => void
   setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>
 }
 
-const postExercise = async (exerciseName: string) => {
-  const accessToken = localStorage.getItem('authToken')
-  console.log('accessToken: ', accessToken)
-
-  const response = await axiosInstance.post(
-    '/api/exercise',
-    {
-      exerciseName,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  )
-  return response.data
-}
-
 const ExerciseList: React.FC<ExerciseListProps> = ({
-  selectedDate,
   exerciseList,
   setTotalTime,
   setExerciseList,
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [exerciseNew, setExerciseNew] = useState('')
+  const [acitveMenuId, setActiveMemuId] = useState<number | null>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+
+      if (!target.closest('deleteBtn')) {
+        setActiveMemuId(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [acitveMenuId])
+
   const addExercise = useMutation({
     mutationFn: postExercise,
   })
 
-  const today = new Date()
-  const isToday = selectedDate.toDateString() === today.toDateString()
+  const startExercise = useMutation({
+    mutationFn: postStartExercise,
+  })
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [exerciseNew, setExerciseNew] = useState('')
+  const deleteExercise = useMutation({
+    mutationFn: deleteExerciseApi,
+  })
+
+  const handleDeleteClick = (exerciseId: number, event: React.MouseEvent) => {
+    event.stopPropagation()
+    // eslint-disable-next-line no-console
+    console.log('Delete 버튼 클릭')
+    deleteExercise.mutate(exerciseId)
+  }
 
   const handleExerciseNewChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setExerciseNew(event.target.value)
   }
-
-  useEffect(() => {
-    if (!isToday) {
-      // 오늘이 아니라면 해당 날짜의 exerciseList 출력
-    }
-  }, [isToday])
 
   useEffect(() => {
     // exerciseList가 변경될 때마다 전체 시간 업데이트
@@ -79,18 +82,32 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     const activeExercise = exerciseList.some((exercise) => exercise.isActive)
 
     // 다른 운동을 하고 있는 경우, 아무것도 하지 않음
-    if (activeExercise) {
-      return
-    }
+    if (activeExercise) return
 
-    setExerciseList((prevList) =>
-      prevList.map((exercise) => {
-        // 클릭한 운동을 시작/정지
-        return exercise.exerciseId === exerciseId
-          ? { ...exercise, isActive: true }
-          : exercise
-      })
+    // 클릭한 운동 찾기
+    const exerciseToStart = exerciseList.find(
+      (exercise) => exercise.exerciseId === exerciseId
     )
+
+    if (exerciseToStart) {
+      try {
+        // 운동 시작 요청
+        await startExercise.mutateAsync(exerciseId)
+
+        // 상태 업데이트
+        setExerciseList((prevList) =>
+          prevList.map((exercise) => {
+            if (exercise.exerciseId === exerciseId) {
+              return { ...exercise, isActive: true }
+            }
+            return exercise
+          })
+        )
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('운동 시작 요청 실패:', error)
+      }
+    }
   }
 
   useEffect(() => {
@@ -110,9 +127,16 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     return () => clearInterval(interval)
   }, [exerciseList, setExerciseList])
 
-  const handleListMenuClick = (event: React.MouseEvent) => {
-    event?.stopPropagation()
-  }
+  const handleListMenuClick =
+    (exerciseId: number) => (event: React.MouseEvent) => {
+      event?.stopPropagation()
+
+      if (acitveMenuId !== exerciseId) {
+        setActiveMemuId(exerciseId)
+      } else {
+        setActiveMemuId(null)
+      }
+    }
 
   const formatTime = (timeInMillis: number) => {
     const totalSeconds = Math.floor(timeInMillis / 1000)
@@ -134,7 +158,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const handleExerciseSubmit = async () => {
     await addExercise.mutateAsync(exerciseNew)
-    console.log(exerciseNew)
     setIsModalOpen(false)
     setExerciseNew('')
   }
@@ -163,10 +186,22 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                 <ExerciseTime>{formatTime(exercise.exerciseTime)}</ExerciseTime>
                 <MenuIcon
                   className="material-symbols-outlined"
-                  onClick={handleListMenuClick}
+                  onClick={handleListMenuClick(exercise.exerciseId)}
                 >
                   more_vert
                 </MenuIcon>
+                {acitveMenuId === exercise.exerciseId && (
+                  <MenuContainer>
+                    <DeleteBtn
+                      className="deleteBtn"
+                      onClick={(event) =>
+                        handleDeleteClick(exercise.exerciseId, event)
+                      }
+                    >
+                      운동 삭제하기
+                    </DeleteBtn>
+                  </MenuContainer>
+                )}
               </RightContainer>
             </ListElement>
           ))
@@ -243,6 +278,7 @@ const RightContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  position: relative;
 `
 
 const PlayIcon = styled.div`
@@ -266,6 +302,27 @@ const MenuIcon = styled.div`
   color: #828282;
   font-weight: 300;
   padding: 0 0 0 10px;
+`
+
+const MenuContainer = styled.div`
+  border: 2px solid #a1b6e8;
+  border-radius: 10px;
+  width: 100px;
+  height: 30px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  background-color: #f2f7ff;
+  z-index: 10;
+`
+
+const DeleteBtn = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #868686;
 `
 
 const AddTitle = styled.div`
