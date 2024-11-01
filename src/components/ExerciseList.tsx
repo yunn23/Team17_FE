@@ -33,7 +33,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement
 
-      if (!target.closest('.menu-icon') && !target.closest('.menu-container')) {
+      if (!target.closest('deleteBtn')) {
         setActiveMemuId(null)
       }
     }
@@ -55,6 +55,13 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   const deleteExercise = useMutation({
     mutationFn: deleteExerciseApi,
   })
+
+  const handleDeleteClick = (exerciseId: number, event: React.MouseEvent) => {
+    event.stopPropagation()
+    // eslint-disable-next-line no-console
+    console.log('Delete 버튼 클릭')
+    deleteExercise.mutate(exerciseId)
+  }
 
   const handleExerciseNewChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -186,7 +193,10 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                 {acitveMenuId === exercise.exerciseId && (
                   <MenuContainer>
                     <DeleteBtn
-                      onClick={() => deleteExercise.mutate(exercise.exerciseId)}
+                      className="deleteBtn"
+                      onClick={(event) =>
+                        handleDeleteClick(exercise.exerciseId, event)
+                      }
                     >
                       운동 삭제하기
                     </DeleteBtn>
@@ -303,6 +313,7 @@ const MenuContainer = styled.div`
   flex-direction: column;
   position: absolute;
   background-color: #f2f7ff;
+  z-index: 10;
 `
 
 const DeleteBtn = styled.div`
