@@ -1,12 +1,30 @@
+import React, { useState, ChangeEvent, useEffect } from 'react'
 import styled from '@emotion/styled'
-import React, { useState, ChangeEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import tagMock from '../mocks/TagMock'
-import searchGroupMock, { Team } from '../mocks/GroupMock'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import {
+  getGroup,
+  Team,
+  verifyGroupPassword,
+  TeamResponse,
+} from '../api/getGroup'
 import GroupListContainer from '../components/GroupListContainer'
 import GroupModal from '../components/GroupModal'
 import TagFilter from '../components/TagFilter'
 import SearchBar from '../components/SearchBar'
+import tagMock from '../mocks/TagMock'
+
+const Error = () => (
+  <ErrorContainer>
+    <ErrorMessage>오류가 발생했습니다.</ErrorMessage>
+  </ErrorContainer>
+)
+
+const Loading = () => (
+  <LoadingContainer>
+    <LoadingText>로딩 중...</LoadingText>
+  </LoadingContainer>
+)
 
 const SearchGroup = () => {
   const [activeFilters, setActiveFilters] = useState<number[]>([])
@@ -16,19 +34,33 @@ const SearchGroup = () => {
     undefined
   )
   const [password, setPassword] = useState('')
+  const [groups, setGroups] = useState<Team[]>([])
   const navigate = useNavigate()
+
+  const {
+    isLoading: groupsLoading,
+    isError: groupsError,
+    data,
+  } = useQuery<TeamResponse, Error, Team[]>({
+    queryKey: ['groupPage', { searchTerm, activeFilters }],
+    queryFn: () => getGroup(0, 8, 'asc', searchTerm, activeFilters),
+    select: (response: TeamResponse) => response.content,
+  })
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value)
   }
 
-  const verifyPassword = () => {
-    if (selectedGroup && password === selectedGroup.password) {
-      setModalType('info')
-    } else {
-      setModalType('error')
+  useEffect(() => {
+    if (data && Array.isArray(data)) {
+      setGroups(data)
     }
-  }
+  }, [data])
+
+  const verifyPasswordMutation = useMutation({
+    mutationFn: (enteredPassword: string) =>
+      verifyGroupPassword(selectedGroup!.id, enteredPassword),
+  })
 
   const toggleFilter = (tagId: number | null | undefined) => {
     if (tagId !== null && tagId !== undefined) {
@@ -47,11 +79,7 @@ const SearchGroup = () => {
   const handleGroupClick = (group: Team) => {
     setSelectedGroup(group)
     setPassword('')
-    if (group.password) {
-      setModalType('password')
-    } else {
-      setModalType('info')
-    }
+    setModalType(group.hasPassword ? 'password' : 'info')
   }
 
   const closeModal = () => {
@@ -67,6 +95,9 @@ const SearchGroup = () => {
     navigate('/addGroup')
   }
 
+  if (groupsLoading) return <Loading />
+  if (groupsError) return <Error />
+
   return (
     <PageWrapper>
       <PageContainer>
@@ -78,7 +109,7 @@ const SearchGroup = () => {
           onToggleFilter={toggleFilter}
         />
         <GroupListContainer
-          groups={searchGroupMock.Page.content}
+          groups={groups}
           searchTerm={searchTerm}
           onCardClick={handleGroupClick}
         />
@@ -87,7 +118,7 @@ const SearchGroup = () => {
           selectedGroup={selectedGroup}
           password={password}
           onPasswordChange={handlePasswordChange}
-          onVerifyPassword={verifyPassword}
+          onVerifyPassword={() => verifyPasswordMutation.mutate(password)}
           onClose={closeModal}
           onJoinGroup={joinGroup}
         />
@@ -147,6 +178,33 @@ const AddButton = styled.button`
   &:hover {
     background-color: #b5c3e9;
   }
+`
+
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+`
+
+const LoadingText = styled.p`
+  font-size: 20px;
+  color: #555;
+`
+
+const ErrorContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background-color: #ffebee;
+`
+
+const ErrorMessage = styled.p`
+  font-size: 20px;
+  color: #b71c1c;
 `
 
 export default SearchGroup
