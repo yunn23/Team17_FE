@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
-import { DateTime, Duration } from 'luxon'
+import { DateTime } from 'luxon'
 import { useParams } from 'react-router'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -9,14 +9,15 @@ import chatbubble from '../assets/chatbubble.svg'
 import getRanking from '../api/getRanking'
 import Loading from '../components/Loading'
 import Error from '../components/Error'
+import { formatTime } from '../components/Timer'
 
-export const formatDuration = (isoDuration: string) => {
-  const duration = Duration.fromISO(isoDuration)
-  const hours = String(duration.hours).padStart(2, '0')
-  const minutes = String(duration.minutes).padStart(2, '0')
-  const seconds = String(duration.seconds).padStart(2, '0')
-  return `${hours}:${minutes}:${seconds}`
-}
+// export const formatDuration = (isoDuration: string) => {
+//   const duration = Duration.fromISO(isoDuration)
+//   const hours = String(duration.hours).padStart(2, '0')
+//   const minutes = String(duration.minutes).padStart(2, '0')
+//   const seconds = String(duration.seconds).padStart(2, '0')
+//   return `${hours}:${minutes}:${seconds}`
+// }
 
 const Ranking = () => {
   const { groupId } = useParams()
@@ -66,9 +67,7 @@ const Ranking = () => {
             <RankElement key={ranker.name} index={index}>
               <RankerCount index={index}>{index + 1}</RankerCount>
               <RankerName>{ranker.name}</RankerName>
-              <RankerTime>
-                {formatDuration(ranker.totalExerciseTime)}
-              </RankerTime>
+              <RankerTime>{formatTime(ranker.totalExerciseTime)}</RankerTime>
             </RankElement>
           )) || <Error name="랭크" />}
         </EntireRank>
@@ -80,7 +79,7 @@ const Ranking = () => {
               {rankData.myRanking}
             </MyRankerCount>
             <RankerName>{rankData.myNickname}</RankerName>
-            <RankerTime>{formatDuration(rankData.myTime)}</RankerTime>
+            <RankerTime>{formatTime(rankData.myTime)}</RankerTime>
           </MyRankElement>
         )}
       </MyRank>
