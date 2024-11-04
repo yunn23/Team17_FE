@@ -17,7 +17,7 @@ const Ranking = () => {
   const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['ranking', groupId],
+    queryKey: ['ranking', groupId, formattedDate],
     queryFn: () =>
       getRanking({
         groupId: groupId || '',
