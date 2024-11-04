@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import { useEffect, useRef, useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Modal from './Modal'
 import postExercise from '../api/postExercise'
 import postStartExercise from '../api/postStartExercise'
@@ -25,6 +25,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   setTotalTime,
   setExerciseList,
 }) => {
+  const queryClient = useQueryClient()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [exerciseNew, setExerciseNew] = useState('')
   const [activeMenuId, setActiveMenuId] = useState<number | null>(null)
@@ -50,6 +51,9 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const addExercise = useMutation({
     mutationFn: postExercise,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['main'] })
+    }
   })
 
   const startExercise = useMutation({
@@ -58,6 +62,9 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const deleteExercise = useMutation({
     mutationFn: deleteExerciseApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['main'] })
+    }
   })
 
   const handleDeleteClick = (exerciseId: number, event: React.MouseEvent) => {

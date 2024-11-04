@@ -5,7 +5,7 @@ import Personal from '../assets/personal.png'
 import getMypage from '../api/getMypage'
 import Loading from '../components/Loading'
 import Error from '../components/Error'
-import { formatDuration } from './Ranking'
+import { formatTime } from '../components/Timer'
 
 const MyPage = () => {
   const { data, isLoading, isError } = useQuery({
@@ -44,11 +44,11 @@ const MyPage = () => {
         </StaticTitleContainer>
         <MonthlyStatic>
           <MonthlyTitle>월별 통계</MonthlyTitle>
-          <MonthlyTime>{formatDuration(data?.monthlyTotal ?? '')}</MonthlyTime>
+          <MonthlyTime>{formatTime(data?.monthlyTotal ?? 0)}</MonthlyTime>
         </MonthlyStatic>
         <WeeklyStatic>
           <WeeklyTitle>주간 통계</WeeklyTitle>
-          <WeeklyTime>{formatDuration(data?.weeklyTotal ?? '')}</WeeklyTime>
+          <WeeklyTime>{formatTime(data?.weeklyTotal ?? 0)}</WeeklyTime>
         </WeeklyStatic>
       </StaticWrapper>
     </MypageWrapper>

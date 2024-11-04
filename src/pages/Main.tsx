@@ -21,12 +21,8 @@ const Main = () => {
   const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
   const fetchExercise = useCallback(async () => {
-    const accessToken = localStorage.getItem('authToken')
 
     const response = await axiosInstance.get('/api', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
       params: {
         date: formattedDate,
       },
@@ -46,7 +42,7 @@ const Main = () => {
     if (data) {
       const fetchedTotalTime = data?.totalTime || 0
       const fetchedExerciseList = data?.exerciseList || []
-      const fetchedDiary = data?.diaries || []
+      const fetchedDiary = data?.diaries.content || []
 
       setTotalTime(Number(fetchedTotalTime))
       setExerciseList(fetchedExerciseList)
