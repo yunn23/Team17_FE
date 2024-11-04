@@ -3,7 +3,6 @@ import { ChangeEvent, FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import Modal from '../components/Modal'
-import tagMock from '../mocks/TagMock'
 import TagFilter from '../components/TagFilter'
 
 const AddGroup = () => {
@@ -119,7 +118,6 @@ const AddGroup = () => {
           />
           <FieldName>태그</FieldName>
           <TagFilter
-            tags={tagMock.tagList}
             activeFilters={activeFilters}
             onToggleFilter={toggleFilter}
           />

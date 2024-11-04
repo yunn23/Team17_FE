@@ -53,7 +53,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     mutationFn: postExercise,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['main'] })
-    }
+    },
   })
 
   const startExercise = useMutation({
@@ -64,7 +64,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     mutationFn: deleteExerciseApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['main'] })
-    }
+    },
   })
 
   const handleDeleteClick = (exerciseId: number, event: React.MouseEvent) => {

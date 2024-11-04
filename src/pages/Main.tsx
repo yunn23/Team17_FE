@@ -21,7 +21,6 @@ const Main = () => {
   const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
   const fetchExercise = useCallback(async () => {
-
     const response = await axiosInstance.get('/api', {
       params: {
         date: formattedDate,

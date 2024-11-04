@@ -12,7 +12,6 @@ import GroupListContainer from '../components/GroupListContainer'
 import GroupModal from '../components/GroupModal'
 import TagFilter from '../components/TagFilter'
 import SearchBar from '../components/SearchBar'
-import tagMock from '../mocks/TagMock'
 
 const Error = () => (
   <ErrorContainer>
@@ -104,7 +103,6 @@ const SearchGroup = () => {
         <PageTitle>그룹 탐색</PageTitle>
         <SearchBar onChange={handleSearchChange} value={searchTerm} />
         <TagFilter
-          tags={tagMock.tagList}
           activeFilters={activeFilters}
           onToggleFilter={toggleFilter}
         />
