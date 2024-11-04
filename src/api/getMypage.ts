@@ -9,7 +9,6 @@ interface MypageResponse {
 }
 
 const getMypage = async (): Promise<MypageResponse> => {
-
   const response = await axiosInstance.get('/api/member/profile')
   return response.data
 }

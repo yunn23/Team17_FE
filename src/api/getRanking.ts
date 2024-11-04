@@ -53,7 +53,6 @@ const getRanking = async ({
   sort,
   date,
 }: GetRankingParams): Promise<RankingResponse> => {
-
   const response = await axiosInstance.get(`/api/team/${groupId}/ranking`, {
     params: { page, size, sort, date },
   })

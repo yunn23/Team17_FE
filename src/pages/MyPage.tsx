@@ -31,7 +31,8 @@ const MyPage = () => {
       <AttendWrapper>
         <AttendIcon src={Sneaker} width={30} />
         <AttendText>
-          지금까지 <TextHighlight>{data?.attendance}</TextHighlight>일 출석하였어요 !
+          지금까지 <TextHighlight>{data?.attendance}</TextHighlight>일
+          출석하였어요 !
         </AttendText>
       </AttendWrapper>
       <StaticWrapper>
