@@ -17,7 +17,7 @@ interface Ranker {
 interface RankingResponse {
   myRanking: number
   myNickname: string
-  myTime: number
+  myExerciseTime: number
   slice: {
     content: Ranker[]
     pageable: {

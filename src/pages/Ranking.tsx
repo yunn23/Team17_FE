@@ -11,14 +11,6 @@ import Loading from '../components/Loading'
 import Error from '../components/Error'
 import { formatTime } from '../components/Timer'
 
-// export const formatDuration = (isoDuration: string) => {
-//   const duration = Duration.fromISO(isoDuration)
-//   const hours = String(duration.hours).padStart(2, '0')
-//   const minutes = String(duration.minutes).padStart(2, '0')
-//   const seconds = String(duration.seconds).padStart(2, '0')
-//   return `${hours}:${minutes}:${seconds}`
-// }
-
 const Ranking = () => {
   const { groupId } = useParams()
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -79,7 +71,7 @@ const Ranking = () => {
               {rankData.myRanking}
             </MyRankerCount>
             <RankerName>{rankData.myNickname}</RankerName>
-            <RankerTime>{formatTime(rankData.myTime)}</RankerTime>
+            <RankerTime>{formatTime(rankData.myExerciseTime)}</RankerTime>
           </MyRankElement>
         )}
       </MyRank>
