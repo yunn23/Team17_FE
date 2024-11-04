@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useEffect } from 'react'
+import React, { useState, ChangeEvent } from 'react'
 import styled from '@emotion/styled'
 import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery } from '@tanstack/react-query'
@@ -34,13 +34,12 @@ const SearchGroup = () => {
     undefined
   )
   const [password, setPassword] = useState('')
-  const [groups, setGroups] = useState<Team[]>([])
   const navigate = useNavigate()
 
   const {
     isLoading: groupsLoading,
     isError: groupsError,
-    data,
+    data: groups,
   } = useQuery<TeamResponse, Error, Team[]>({
     queryKey: ['groupPage', { searchTerm, activeFilters }],
     queryFn: () => getGroup(0, 8, 'asc', searchTerm, activeFilters),
@@ -50,12 +49,6 @@ const SearchGroup = () => {
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value)
   }
-
-  useEffect(() => {
-    if (data && Array.isArray(data)) {
-      setGroups(data)
-    }
-  }, [data])
 
   const verifyPasswordMutation = useMutation({
     mutationFn: (enteredPassword: string) =>
@@ -108,11 +101,13 @@ const SearchGroup = () => {
           activeFilters={activeFilters}
           onToggleFilter={toggleFilter}
         />
-        <GroupListContainer
-          groups={groups}
-          searchTerm={searchTerm}
-          onCardClick={handleGroupClick}
-        />
+        {groups && (
+          <GroupListContainer
+            groups={groups}
+            searchTerm={searchTerm}
+            onCardClick={handleGroupClick}
+          />
+        )}
         <GroupModal
           modalType={modalType}
           selectedGroup={selectedGroup}
