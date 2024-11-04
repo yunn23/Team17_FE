@@ -42,7 +42,7 @@ const Main = () => {
     if (data) {
       const fetchedTotalTime = data?.totalTime || 0
       const fetchedExerciseList = data?.exerciseList || []
-      const fetchedDiary = data?.diaries || []
+      const fetchedDiary = data?.diaries.content || []
 
       setTotalTime(Number(fetchedTotalTime))
       setExerciseList(fetchedExerciseList)
