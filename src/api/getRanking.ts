@@ -53,13 +53,9 @@ const getRanking = async ({
   sort,
   date,
 }: GetRankingParams): Promise<RankingResponse> => {
-  const accessToken = localStorage.getItem('authToken')
 
   const response = await axiosInstance.get(`/api/team/${groupId}/ranking`, {
     params: { page, size, sort, date },
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
   })
   return response.data
 }

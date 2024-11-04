@@ -9,13 +9,8 @@ interface MypageResponse {
 }
 
 const getMypage = async (): Promise<MypageResponse> => {
-  const accessToken = localStorage.getItem('authToken')
 
-  const response = await axiosInstance.get('/api/member/profile', {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
+  const response = await axiosInstance.get('/api/member/profile')
   return response.data
 }
 
