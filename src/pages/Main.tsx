@@ -21,12 +21,8 @@ const Main = () => {
   const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
   const fetchExercise = useCallback(async () => {
-    const accessToken = localStorage.getItem('authToken')
 
     const response = await axiosInstance.get('/api', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
       params: {
         date: formattedDate,
       },
