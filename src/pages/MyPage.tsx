@@ -1,5 +1,4 @@
 import styled from '@emotion/styled'
-import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Sneaker from '../assets/sneaker.png'
 import Personal from '../assets/personal.png'
@@ -15,22 +14,6 @@ const MyPage = () => {
     retry: 1,
   })
 
-  const [nickname, setNickname] = useState(data?.nickname)
-  const [email, setEmail] = useState(data?.email)
-  const [attendance, setAttendance] = useState(data?.attendance)
-  const [weeklyTotal, setWeeklyTotal] = useState(data?.weeklyTotal)
-  const [monthlyTotal, setMonthlyTotal] = useState(data?.monthlyTotal)
-
-  useEffect(() => {
-    if (data) {
-      setNickname(data.nickname)
-      setEmail(data.email)
-      setAttendance(data.attendance)
-      setWeeklyTotal(data.weeklyTotal)
-      setMonthlyTotal(data.monthlyTotal)
-    }
-  }, [data])
-
   if (isLoading) return <Loading />
   if (isError) return <Error name="마이페이지" />
 
@@ -40,15 +23,15 @@ const MyPage = () => {
       <PersonalWrapper>
         <PersonalPicture src={Personal} width={90} />
         <PersonalInfo>
-          <PersonalName>{nickname}</PersonalName>
-          <PersonalEmail>{email}</PersonalEmail>
+          <PersonalName>{data?.nickname}</PersonalName>
+          <PersonalEmail>{data?.email}</PersonalEmail>
           <ExitMember>회원 탈퇴하기</ExitMember>
         </PersonalInfo>
       </PersonalWrapper>
       <AttendWrapper>
         <AttendIcon src={Sneaker} width={30} />
         <AttendText>
-          지금까지 <TextHighlight>{attendance}</TextHighlight>일 출석하였어요 !
+          지금까지 <TextHighlight>{data?.attendance}</TextHighlight>일 출석하였어요 !
         </AttendText>
       </AttendWrapper>
       <StaticWrapper>
@@ -60,11 +43,11 @@ const MyPage = () => {
         </StaticTitleContainer>
         <MonthlyStatic>
           <MonthlyTitle>월별 통계</MonthlyTitle>
-          <MonthlyTime>{formatDuration(monthlyTotal ?? '')}</MonthlyTime>
+          <MonthlyTime>{formatDuration(data?.monthlyTotal ?? '')}</MonthlyTime>
         </MonthlyStatic>
         <WeeklyStatic>
           <WeeklyTitle>주간 통계</WeeklyTitle>
-          <WeeklyTime>{formatDuration(weeklyTotal ?? '')}</WeeklyTime>
+          <WeeklyTime>{formatDuration(data?.weeklyTotal ?? '')}</WeeklyTime>
         </WeeklyStatic>
       </StaticWrapper>
     </MypageWrapper>
