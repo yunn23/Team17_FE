@@ -102,11 +102,11 @@ const SearchGroup = () => {
           onToggleFilter={toggleFilter}
         />
         {groups && (
-        <GroupListContainer
-          groups={groups}
-          searchTerm={searchTerm}
-          onCardClick={handleGroupClick}
-        />
+          <GroupListContainer
+            groups={groups}
+            searchTerm={searchTerm}
+            onCardClick={handleGroupClick}
+          />
         )}
         <GroupModal
           modalType={modalType}
