@@ -129,18 +129,16 @@ const RankContainer = styled.div`
 `
 
 const DateContainer = styled.div`
-  padding: 15px 0;
+  padding: 15px 20px;
   color: #4a4a4a;
 `
 
 const EntireRank = styled.div`
-  height: 470px;
+  height: 400px;
   overflow-y: auto;
 `
 
 const MyRank = styled.div`
-  border: 1px solid #b5c3e9;
-  border-radius: 10px;
   margin-top: 20px;
 `
 
@@ -148,6 +146,8 @@ const MyRankElement = styled.div<{ ranking: number }>`
   display: flex;
   font-size: 18px;
   padding: 10px 20px;
+  border: 1px solid #b5c3e9;
+  border-radius: 10px;
   background: ${(props) => {
     if (props.ranking === 1)
       return 'linear-gradient(90deg, #FFF 0%, #FFC329 100%)'
