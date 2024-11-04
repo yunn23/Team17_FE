@@ -36,11 +36,14 @@ const KakaoRedirect = () => {
       localStorage.setItem('authToken', tokenData)
       navigate('/')
     }
-  }, [isSuccess, navigate, tokenData])
-
+    if (!code) {
+      navigate('/login', { replace: true })
+    }
+  }, [isSuccess, navigate, tokenData, code])
   if (isLoading) return <div>로그인 중 ...</div>
   if (isError)
     return <div>에러가 발생했습니다: {`${(queryError as Error).message}`}</div>
+  if (!code) return <div>유효한 코드가 없습니다. 로그인 페이지로 이동합니다.</div>
 
   return <div>로그인 리다이렉트 중</div>
 }
