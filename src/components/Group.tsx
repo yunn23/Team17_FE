@@ -28,7 +28,7 @@ const Group: React.FC<GroupProps> = ({
   }
 
   Group.defaultProps = {
-    onButtonClick: () => {}, // 빈 함수를 기본값으로 설정
+    onButtonClick: () => {},
   }
 
   return (

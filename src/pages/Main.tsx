@@ -17,14 +17,8 @@ const Main = () => {
   const [diary, setDiary] = useState([])
 
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const [formattedDate, setFormattedDate] = useState(
-    DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
-  )
 
-  useEffect(() => {
-    const newFormat = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
-    setFormattedDate(newFormat)
-  }, [selectedDate])
+  const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
   const fetchExercise = useCallback(async () => {
     const accessToken = localStorage.getItem('authToken')
