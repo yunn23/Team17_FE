@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import Modal from './Modal'
 import postExercise from '../api/postExercise'
@@ -27,22 +27,26 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [exerciseNew, setExerciseNew] = useState('')
-  const [acitveMenuId, setActiveMemuId] = useState<number | null>(null)
+  const [activeMenuId, setActiveMenuId] = useState<number | null>(null)
+
+  const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement
-
-      if (!target.closest('deleteBtn')) {
-        setActiveMemuId(null)
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setActiveMenuId(null)
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
+
+    // 메뉴가 활성화되어 있을 때만 이벤트 리스너 추가
+    if (activeMenuId !== null) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [acitveMenuId])
+  }, [activeMenuId])
 
   const addExercise = useMutation({
     mutationFn: postExercise,
@@ -131,10 +135,10 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     (exerciseId: number) => (event: React.MouseEvent) => {
       event?.stopPropagation()
 
-      if (acitveMenuId !== exerciseId) {
-        setActiveMemuId(exerciseId)
+      if (activeMenuId !== exerciseId) {
+        setActiveMenuId(exerciseId)
       } else {
-        setActiveMemuId(null)
+        setActiveMenuId(null)
       }
     }
 
@@ -190,10 +194,11 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                 >
                   more_vert
                 </MenuIcon>
-                {acitveMenuId === exercise.exerciseId && (
+                {activeMenuId === exercise.exerciseId && (
                   <MenuContainer>
                     <DeleteBtn
                       className="deleteBtn"
+                      ref={menuRef}
                       onClick={(event) =>
                         handleDeleteClick(exercise.exerciseId, event)
                       }
