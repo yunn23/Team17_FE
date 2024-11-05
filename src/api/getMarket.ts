@@ -8,6 +8,7 @@ interface Tags {
 interface Content {
     productId: number
     imageUrl: string
+    productUrl: string
     name: string
     price: number
     storeName: string
@@ -18,8 +19,10 @@ interface MarketResponse {
     content: Content[]
 }
 
-const getMarket = async (): Promise<MarketResponse> => {
-    const response = await axiosInstance.get('/api/market')
+const getMarket = async ( tagIds?: number ): Promise<MarketResponse> => {
+    const response = await axiosInstance.get('/api/market', {
+        params: tagIds ? { tagIds } : undefined
+    })
     return response.data
 }
 

@@ -1,17 +1,30 @@
 import styled from '@emotion/styled'
 import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 import getMarket from '../api/getMarket'
 import Loading from '../components/Loading'
 import Error from '../components/Error'
+import marketTag from '../mocks/marketTag'
+import MarketTagFilter from '../components/MarketTagFilter'
 
 
 const Market = () => {
 
+  const [tagId, setTagId] = useState<number | undefined>(undefined)
+
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['market'],
-    queryFn: getMarket,
+    queryKey: ['market', tagId],
+    queryFn: () => getMarket(tagId),
     retry: 1
   })
+
+  const [activeTag, setActiveTag] = useState<number | null>(null)
+  const toggleFilter = (tagIdTmp: number) => {
+    const newActiveTag = activeTag === tagIdTmp ? null : tagIdTmp
+    setActiveTag(newActiveTag)
+    setTagId(newActiveTag || undefined)
+  }
+  
 
   if (isLoading) return <Loading />
   if (isError) return <Error name="마켓화면" />
@@ -19,18 +32,26 @@ const Market = () => {
   return (
     <MarketWrapper>
       <MarketTitle>마켓</MarketTitle>
+      <MarketTagFilter
+        tags={marketTag.tagList}
+        activeTag={activeTag}
+        onToggleFilter={toggleFilter}
+      />
       <ProductWrapper>
         {data?.content.map((product) => (
-          <ProductContainer key={product.productId}>
-            <ProductPhoto src={product.imageUrl} alt={product.name} width={90} height={90} />
-            <ProductInfo>
-              <ProductName>{product.name}</ProductName>
-              <ProductSite>{product.storeName}</ProductSite>
-              <ProductPrice>
-                {Number(product.price).toLocaleString()}원
-              </ProductPrice>
-            </ProductInfo>
+          <ProductLink key={product.productId} href={product.productUrl} target='_blank' rel='noopener noreferrer'>
+            <ProductContainer>
+              <ProductPhoto src={product.imageUrl} alt={product.name} width={90} height={90} />
+              <ProductInfo>
+                <ProductName>{product.name}</ProductName>
+                <ProductSite>{product.storeName}</ProductSite>
+                <ProductPrice>
+                  {Number(product.price).toLocaleString()}원
+                </ProductPrice>
+              </ProductInfo>
           </ProductContainer>
+          </ProductLink>
+          
         ))}
       </ProductWrapper>
     </MarketWrapper>
@@ -66,6 +87,11 @@ const ProductContainer = styled.div`
   margin: 10px 5px;
   display: flex;
   flex-direction: row;
+`
+
+const ProductLink = styled.a`
+  text-decoration: none;
+  color: inherit;
 `
 
 const ProductPhoto = styled.img`
