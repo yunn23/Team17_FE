@@ -1,16 +1,28 @@
 import styled from '@emotion/styled'
-import ProductMock from '../mocks/ProductMock'
+import { useQuery } from '@tanstack/react-query'
+import getMarket from '../api/getMarket'
+import Loading from '../components/Loading'
+import Error from '../components/Error'
+
 
 const Market = () => {
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['market'],
+    queryFn: getMarket,
+    retry: 1
+  })
+
+  if (isLoading) return <Loading />
+  if (isError) return <Error name="마켓화면" />
+
   return (
     <MarketWrapper>
       <MarketTitle>마켓</MarketTitle>
       <ProductWrapper>
-        {ProductMock.content.map((product) => (
+        {data?.content.map((product) => (
           <ProductContainer key={product.productId}>
-            <ProductPhoto>
-              <img src={product.imageUrl} alt={product.name} />
-            </ProductPhoto>
+            <ProductPhoto src={product.imageUrl} alt={product.name} width={90} height={90} />
             <ProductInfo>
               <ProductName>{product.name}</ProductName>
               <ProductSite>{product.storeName}</ProductSite>
@@ -51,20 +63,21 @@ const ProductWrapper = styled.div`
 const ProductContainer = styled.div`
   border-radius: 10px;
   border: 2px solid #b5c3e9;
-  margin: 5px;
+  margin: 10px 5px;
   display: flex;
   flex-direction: row;
 `
 
-const ProductPhoto = styled.div`
+const ProductPhoto = styled.img`
   margin: 10px;
   width: 90px;
   height: 90px;
   border-radius: 5px;
+  padding: 2px 10px;
 `
 
 const ProductInfo = styled.div`
-  margin-left: 10px;
+  margin-left: 15px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -84,7 +97,7 @@ const ProductSite = styled.div`
 const ProductPrice = styled.div`
   margin-top: 10px;
   align-self: flex-end;
-  margin-right: 15px;
+  margin-right: 20px;
 `
 
 export default Market
