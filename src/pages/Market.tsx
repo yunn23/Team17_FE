@@ -6,11 +6,14 @@ import Loading from '../components/Loading'
 import Error from '../components/Error'
 import marketTag from '../mocks/marketTag'
 import MarketTagFilter from '../components/MarketTagFilter'
+import getMarketView from '../api/getMarketView'
 
 
 const Market = () => {
 
   const [tagId, setTagId] = useState<number | undefined>(undefined)
+  const [activeTag, setActiveTag] = useState<number | null>(null)
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null)
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['market', tagId],
@@ -18,16 +21,29 @@ const Market = () => {
     retry: 1
   })
 
-  const [activeTag, setActiveTag] = useState<number | null>(null)
   const toggleFilter = (tagIdTmp: number) => {
     const newActiveTag = activeTag === tagIdTmp ? null : tagIdTmp
     setActiveTag(newActiveTag)
     setTagId(newActiveTag || undefined)
   }
+
+  const onProductClick = (productId: number) => {
+    setSelectedProductId(productId)
+  }
+
+  const { isLoading: isMarketViewLoading, isError:isMarketViewError } = useQuery({
+    queryKey: ['marketView', selectedProductId],
+    queryFn: () => getMarketView(selectedProductId!),
+    enabled: !!selectedProductId,
+    retry: 1
+  })
   
 
   if (isLoading) return <Loading />
   if (isError) return <Error name="마켓화면" />
+
+  if (isMarketViewLoading) return <Loading />
+  if (isMarketViewError) return <Error name="상품 조회" />
 
   return (
     <MarketWrapper>
@@ -40,7 +56,7 @@ const Market = () => {
       <ProductWrapper>
         {data?.content.map((product) => (
           <ProductLink key={product.productId} href={product.productUrl} target='_blank' rel='noopener noreferrer'>
-            <ProductContainer>
+            <ProductContainer onClick={() => onProductClick(product.productId)}>
               <ProductPhoto src={product.imageUrl} alt={product.name} width={90} height={90} />
               <ProductInfo>
                 <ProductName>{product.name}</ProductName>
