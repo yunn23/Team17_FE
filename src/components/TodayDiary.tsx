@@ -73,7 +73,6 @@ const TodayDiary: React.FC<TodayDiaryProps> = ({ diaryData }) => {
             <DiaryHeader>
               <DiaryTime>
                 {DateTime.fromISO(diary.createdAt, { zone: 'utc' })
-                  .setZone('Asia/Seoul')
                   .toFormat('HH:mm')}
               </DiaryTime>
               <DiaryMenu
