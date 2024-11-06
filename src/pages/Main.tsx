@@ -37,13 +37,8 @@ const Main = () => {
       setTotalTime(fetchedTotalTime)
       setExerciseList(fetchedExerciseList)
       setDiary(fetchedDiary)
-      console.log('fetchedTotalTime: ', fetchedTotalTime)
     }
   }, [data])
-
-  useEffect(() => {
-    console.log('totalTime: ', totalTime)
-  }, [totalTime])
 
   useEffect(() => {
     const activeExercise = exerciseList.find(
