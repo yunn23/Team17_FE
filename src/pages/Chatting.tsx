@@ -1,15 +1,11 @@
 /* eslint-disable no-console */
+import { useState, useEffect, useRef, useCallback } from 'react'
 import styled from '@emotion/styled'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useState, useEffect, useRef } from 'react'
-import { Client, IMessage } from '@stomp/stompjs'
-import axios from 'axios'
+import { useParams, useNavigate } from 'react-router-dom'
+import { Client, IMessage, Frame } from '@stomp/stompjs'
+import SockJS from 'sockjs-client'
+import { fetchInitialMessages, ChatMessage } from '../api/getChatting'
 
-export interface ChatMessage {
-  nickname: string
-  message: string
-  createAt: string
-}
 interface MessageProps {
   isOwn: boolean
 }
@@ -17,19 +13,7 @@ interface MessageProps {
 const Chatting = () => {
   const { roomId } = useParams<{ roomId: string }>()
   const currentUser = { nickname: 'GuestUser' }
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      nickname: '박길동',
-      message:
-        '저희 방은 유산소를 합니다.\n사이클, 런닝머신, 복합운동 등 종류는 자율입니다. 😄',
-      createAt: new Date().toISOString(),
-    },
-    {
-      nickname: '김길동',
-      message: '환영합니다.',
-      createAt: new Date().toISOString(),
-    },
-  ])
+  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputMessage, setInputMessage] = useState('')
   const stompClient = useRef<Client | null>(null)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
@@ -39,83 +23,100 @@ const Chatting = () => {
     navigate(-1)
   }
 
-  useEffect(() => {
-    const fetchMessages = async () => {
+  const loadInitialMessages = useCallback(async () => {
+    if (roomId) {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/chat/${roomId}/messages`
-        )
-        setMessages(response.data.content)
+        const initialMessages = await fetchInitialMessages(roomId)
+        setMessages(initialMessages)
       } catch (error) {
-        console.error('Failed to fetch chat messages', error)
+        console.error('Failed to load initial messages:', error)
       }
-    }
-
-    const connect = () => {
-      const client = new Client({
-        brokerURL: 'ws://localhost:3000/ws-stomp',
-        onConnect: () => {
-          console.log('Connected!')
-          stompClient.current?.subscribe(
-            `/sub/cache/${roomId}`,
-            (message: IMessage) => {
-              const newMessage = JSON.parse(message.body) as ChatMessage
-              setMessages((prevMessages) => [
-                ...prevMessages,
-                {
-                  ...newMessage,
-                  createAt: new Date(newMessage.createAt).toLocaleString(),
-                },
-              ])
-              scrollToBottom()
-            }
-          )
-        },
-      })
-      stompClient.current = client
-      stompClient.current.activate()
-    }
-
-    fetchMessages()
-    connect()
-    return () => {
-      stompClient.current?.deactivate()
     }
   }, [roomId])
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+  useEffect(() => {
+    loadInitialMessages()
+  }, [roomId, loadInitialMessages])
+
+  const subscribeToChat = useCallback(() => {
+    stompClient.current?.subscribe(
+      `/topic/messages/${roomId}`,
+      (message: IMessage) => {
+        const newMessage = JSON.parse(message.body) as ChatMessage
+        setMessages((prevMessages) => [...prevMessages, newMessage])
+      }
+    )
+    stompClient.current?.subscribe(
+      '/user/queue/errors',
+      (message: IMessage) => {
+        console.error('Error received:', message.body)
+      }
+    )
+  }, [roomId])
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages])
-
-  // eslint-disable-next-line
-  // 메시지 발송
-  const sendMessage = () => {
-    /*
-      if (stompClient.current && inputMessage) {
-        stompClient.current.publish({
-          destination: `/pub/cache`,
-          body: JSON.stringify({
-            nickname: currentUser.nickname,
-            message: inputMessage,
-            createdAt: new Date().toISOString()
-          })
-        });
-        setInputMessage("");
+    loadInitialMessages()
+    const connectWebSocket = () => {
+      const token = localStorage.getItem('authToken')
+      if (!token) {
+        console.error('Authentication token not found')
+        return
       }
-      */
-    if (inputMessage) {
-      // 모의 데이터를 생성하여 메시지 목록에 추가
-      const newMessage = {
+      const socketUrl = `http://13.125.102.156:8080/api/team/chatting/websocket?access_token=${token}`
+      const socket = new SockJS(socketUrl)
+
+      stompClient.current = new Client({
+        webSocketFactory: () => socket,
+        reconnectDelay: 5000,
+        connectHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
+        onConnect: (frame: Frame) => {
+          console.log('Connected:', frame)
+          subscribeToChat()
+        },
+        onStompError: (frame: Frame) => {
+          console.error('STOMP Error:', frame.headers.message)
+          alert(`Connection error: ${frame.headers.message}`)
+        },
+        onWebSocketClose: (evt) => {
+          console.error('WebSocket closed:', evt)
+          if (evt.code === 1006) {
+            console.log('Reconnecting...')
+          }
+        },
+        onWebSocketError: (evt) => {
+          console.error('WebSocket error:', evt)
+        },
+      })
+      stompClient.current.activate()
+    }
+
+    connectWebSocket()
+    return () => {
+      stompClient.current?.deactivate()
+    }
+  }, [roomId, loadInitialMessages, subscribeToChat])
+
+  const sendMessage = () => {
+    if (!inputMessage.trim()) return
+    if (stompClient.current?.active) {
+      const message = {
+        chatId: Date.now(),
         nickname: currentUser.nickname,
         message: inputMessage,
-        createAt: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
       }
-      setMessages((prevMessages) => [...prevMessages, newMessage])
+      stompClient.current.publish({
+        destination: `/app/chat/${roomId}`,
+        body: JSON.stringify(message),
+      })
+      console.log('Message sent.')
+      setMessages((prevMessages) => [...prevMessages, message])
       setInputMessage('')
+    } else {
+      console.error('Cannot send message - WebSocket is not connected.')
+      alert('Cannot send message - WebSocket is not connected.')
     }
   }
 
@@ -126,10 +127,10 @@ const Chatting = () => {
           <Prev onClick={handlePrev}>{'<'}</Prev>
           <PageTitle>매일 운동 도전</PageTitle>
         </HeaderContainer>
-        <div className="messages" style={{ flex: 1, overflow: 'auto' }}>
+        <div>
           {messages.map((msg) => (
             <MessageContainer
-              key={msg.nickname + msg.createAt}
+              key={msg.chatId}
               isOwn={msg.nickname === currentUser.nickname}
             >
               <MessageInfo isOwn={msg.nickname === currentUser.nickname}>
@@ -142,7 +143,7 @@ const Chatting = () => {
                   {msg.message}
                 </MessageBubble>
                 <TimeStamp isOwn={msg.nickname === currentUser.nickname}>
-                  {new Date(msg.createAt).toLocaleTimeString([], {
+                  {new Date(msg.createdAt).toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
                   })}

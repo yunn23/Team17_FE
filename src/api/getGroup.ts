@@ -12,6 +12,10 @@ export interface Team {
   tagList: Tag[]
 }
 
+export interface MyTeam extends Team {
+  password?: string | null
+}
+
 export interface TeamResponse {
   content: Team[]
   pageable: {
@@ -39,35 +43,25 @@ export interface TeamResponse {
   empty: boolean
 }
 
-export interface MyGroup {
-  teamName: string
-  leaderNickname: string
-  teamDescription: string
-  maxParticipants: number
-  currentParticipants: number
-  password?: string | null
-  tagList: Tag[]
-}
-
 export interface MyGroupResponse {
-  groupList: MyGroup[]
+  groupList: MyTeam[]
 }
 
 export const getGroup = async (
   page = 0,
   size = 8,
-  sort = 'asc',
+  sort = 'teamId,asc',
   searchTerm = '',
   activeFilters: number[] = []
 ): Promise<TeamResponse> => {
   let queryString = `page=${page}&size=${size}&sort=${sort}`
 
   if (searchTerm) {
-    queryString += `&search=${encodeURIComponent(searchTerm)}`
+    queryString += `&teamName=${encodeURIComponent(searchTerm)}`
   }
 
   if (activeFilters.length > 0) {
-    queryString += `&filters=${activeFilters.join(',')}`
+    queryString += `&tagIdList=${activeFilters.join(',')}`
   }
 
   const url = `/api/team?${queryString}`
@@ -75,10 +69,49 @@ export const getGroup = async (
   return response.data
 }
 
-export const getMyGroup = async (): Promise<MyGroup[]> => {
-  const response = await axiosInstance.get<MyGroupResponse>('/api/member/group')
+export const getMyGroup = async (
+  page = 0,
+  size = 8,
+  sort = 'teamId,asc'
+): Promise<TeamResponse> => {
+  try {
+    const url = `/api/team/joined?page=${page}&size=${size}&sort=${sort}`
+    const response = await axiosInstance.get<{ content: MyTeam[] }>(url)
+    const teams = response.data.content.map((group: MyTeam) => ({
+      ...group,
+      id: group.id,
+      hasPassword: !!group.hasPassword,
+    }))
 
-  return response.data.groupList
+    return {
+      content: teams,
+      pageable: {
+        pageNumber: page,
+        pageSize: size,
+        sort: {
+          empty: false,
+          sorted: true,
+          unsorted: false,
+        },
+        offset: page * size,
+        paged: true,
+        unpaged: false,
+      },
+      first: page === 0,
+      last: teams.length < size,
+      size,
+      number: page,
+      sort: {
+        empty: false,
+        sorted: true,
+        unsorted: false,
+      },
+      numberOfElements: teams.length,
+      empty: teams.length === 0,
+    }
+  } catch (error) {
+    throw new Error('Failed to fetch group data.')
+  }
 }
 
 export const verifyGroupPassword = async (
@@ -89,6 +122,24 @@ export const verifyGroupPassword = async (
     password,
   })
   return response.status === 200
+}
+
+export const deleteTeam = async (teamId: number): Promise<void> => {
+  try {
+    const url = `/api/team/${teamId}`
+    await axiosInstance.delete(url)
+  } catch (error) {
+    throw new Error('Failed to delete team.')
+  }
+}
+
+export const withdrawFromTeam = async (teamId: number): Promise<void> => {
+  try {
+    const url = `/api/team/withdraw/${teamId}`
+    await axiosInstance.delete(url)
+  } catch (error) {
+    throw new Error('Failed to withdraw from team.')
+  }
 }
 
 export {}

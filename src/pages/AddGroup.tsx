@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { ChangeEvent, FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import postGroup from '../api/postGroup'
 
 import Modal from '../components/Modal'
 import TagFilter from '../components/TagFilter'
@@ -50,7 +51,7 @@ const AddGroup = () => {
     navigate(-1)
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (
       !inputs.teamname ||
@@ -67,16 +68,24 @@ const AddGroup = () => {
       teamDescription: inputs.comment,
       maxParticipants: Number(inputs.participant),
       password: inputs.password ? inputs.password : null,
-      tagIdList: activeFilters,
+      tagIdList: activeFilters.map((id) => ({ tagId: id })),
     }
-    // 추후 서버로 데이터를 보내는 로직 구현
-    // eslint-disable-next-line
-    console.log('Submitting group data:', groupData)
-    setModalMessage('그룹 생성이 완료되었습니다.')
-    setModalOpen(true)
-    // eslint-disable-next-line no-console
-    console.log('Submitting group data- after:', groupData)
-    setSubmissionSuccess(true)
+    postGroup({
+      teamName: groupData.teamName,
+      teamDescription: groupData.teamDescription,
+      maxParticipants: groupData.maxParticipants,
+      password: groupData.password,
+      tagIdList: groupData.tagIdList,
+    })
+      .then(() => {
+        setSubmissionSuccess(true)
+        navigate('/searchgroup')
+      })
+      .catch(() => {
+        setModalMessage('그룹 생성에 실패했습니다. 다시 시도해주세요.')
+        setSubmissionSuccess(false)
+        setModalOpen(true)
+      })
   }
 
   return (
