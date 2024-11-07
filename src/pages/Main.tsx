@@ -12,7 +12,6 @@ import DateSelect from '../components/DateSelect'
 import getMain from '../api/getMain'
 
 const Main = () => {
-
   const [selectedDate, setSelectedDate] = useState(new Date())
 
   const resetHour = 3
@@ -40,7 +39,9 @@ const Main = () => {
   })
 
   const [totalTime, setTotalTime] = useState(data?.totalTime)
-  const [exerciseList, setExerciseList] = useState<Exercise[]>(data?.exerciseList || [])
+  const [exerciseList, setExerciseList] = useState<Exercise[]>(
+    data?.exerciseList || []
+  )
   const [diary, setDiary] = useState(data?.diary || [])
 
   const isAnyActive = exerciseList?.some((exercise) => exercise.isActive)

@@ -1,29 +1,29 @@
-import axiosInstance from "./axiosInstance"
+import axiosInstance from './axiosInstance'
 
 interface Tags {
-    tagId: number
-    productTagName: string
+  tagId: number
+  productTagName: string
 }
 
 interface Content {
-    productId: number
-    imageUrl: string
-    productUrl: string
-    name: string
-    price: number
-    storeName: string
-    tag: Tags[] 
+  productId: number
+  imageUrl: string
+  productUrl: string
+  name: string
+  price: number
+  storeName: string
+  tag: Tags[]
 }
 
 interface MarketResponse {
-    content: Content[]
+  content: Content[]
 }
 
-const getMarket = async ( tagIds?: number ): Promise<MarketResponse> => {
-    const response = await axiosInstance.get('/api/market', {
-        params: tagIds ? { tagIds } : undefined
-    })
-    return response.data
+const getMarket = async (tagIds?: number): Promise<MarketResponse> => {
+  const response = await axiosInstance.get('/api/market', {
+    params: tagIds ? { tagIds } : undefined,
+  })
+  return response.data
 }
 
 export default getMarket

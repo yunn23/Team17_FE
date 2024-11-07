@@ -27,7 +27,6 @@ const Timer: React.FC<TimerProps> = ({
   selectedDate,
   activeExerciseId,
 }) => {
-
   const stopExercise = useMutation({
     mutationFn: putStopExercise,
   })

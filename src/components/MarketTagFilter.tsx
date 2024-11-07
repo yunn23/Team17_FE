@@ -20,14 +20,14 @@ const MarketTagFilter: React.FC<TagFilterProps> = ({
   return (
     <Filters>
       {tags.map((tag) => (
-          <Button
-            key={tag.tagId}
-            onClick={() => onToggleFilter(tag.tagId)}
-            active={activeTag === tag.tagId}
-          >
-            {tag.tagName}
-          </Button>
-        ))}
+        <Button
+          key={tag.tagId}
+          onClick={() => onToggleFilter(tag.tagId)}
+          active={activeTag === tag.tagId}
+        >
+          {tag.tagName}
+        </Button>
+      ))}
     </Filters>
   )
 }
@@ -40,7 +40,7 @@ const Button = styled.button<ButtonProps>`
   box-sizing: border-box;
   background-color: ${({ active }) => (active ? '#B5C3E9' : 'white')};
   color: ${({ active }) => (active ? 'white' : '#768DCB')};
-  border: 1.5px solid #B5C3E9;
+  border: 1.5px solid #b5c3e9;
   border-radius: 7px;
   margin: 5px 3px;
   cursor: pointer;

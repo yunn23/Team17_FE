@@ -8,17 +8,17 @@ import marketTag from '../mocks/marketTag'
 import MarketTagFilter from '../components/MarketTagFilter'
 import getMarketView from '../api/getMarketView'
 
-
 const Market = () => {
-
   const [tagId, setTagId] = useState<number | undefined>(undefined)
   const [activeTag, setActiveTag] = useState<number | null>(null)
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(null)
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(
+    null
+  )
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['market', tagId],
     queryFn: () => getMarket(tagId),
-    retry: 1
+    retry: 1,
   })
 
   const toggleFilter = (tagIdTmp: number) => {
@@ -31,13 +31,13 @@ const Market = () => {
     setSelectedProductId(productId)
   }
 
-  const { isLoading: isMarketViewLoading, isError:isMarketViewError } = useQuery({
-    queryKey: ['marketView', selectedProductId],
-    queryFn: () => getMarketView(selectedProductId!),
-    enabled: !!selectedProductId,
-    retry: 1
-  })
-  
+  const { isLoading: isMarketViewLoading, isError: isMarketViewError } =
+    useQuery({
+      queryKey: ['marketView', selectedProductId],
+      queryFn: () => getMarketView(selectedProductId!),
+      enabled: !!selectedProductId,
+      retry: 1,
+    })
 
   if (isLoading) return <Loading />
   if (isError) return <Error name="마켓화면" />
@@ -55,9 +55,19 @@ const Market = () => {
       />
       <ProductWrapper>
         {data?.content.map((product) => (
-          <ProductLink key={product.productId} href={product.productUrl} target='_blank' rel='noopener noreferrer'>
+          <ProductLink
+            key={product.productId}
+            href={product.productUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <ProductContainer onClick={() => onProductClick(product.productId)}>
-              <ProductPhoto src={product.imageUrl} alt={product.name} width={90} height={90} />
+              <ProductPhoto
+                src={product.imageUrl}
+                alt={product.name}
+                width={90}
+                height={90}
+              />
               <ProductInfo>
                 <ProductName>{product.name}</ProductName>
                 <ProductSite>{product.storeName}</ProductSite>
@@ -65,9 +75,8 @@ const Market = () => {
                   {Number(product.price).toLocaleString()}원
                 </ProductPrice>
               </ProductInfo>
-          </ProductContainer>
+            </ProductContainer>
           </ProductLink>
-          
         ))}
       </ProductWrapper>
     </MarketWrapper>
