@@ -186,7 +186,7 @@ const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  background-color: #f2f2f6;
+  background-color: #ffffff;
   padding: 20px;
   box-sizing: border-box;
   height: calc(100vh - 55px);
@@ -195,14 +195,9 @@ const PageWrapper = styled.div`
 `
 
 const PageContainer = styled.div`
-  padding: 10px 15px 20px 5px;
   display: flex;
   align-items: center;
   flex-direction: column;
-  background-color: #ffffff;
-  border-radius: 10px;
-  margin: 20px 0px;
-  height: 90%;
 `
 
 const PageTitle = styled.p`

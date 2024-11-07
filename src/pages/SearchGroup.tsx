@@ -76,7 +76,11 @@ const SearchGroup = () => {
   const handleGroupClick = (group: Team) => {
     setSelectedGroup(group)
     setPassword('')
-    setModalType(group.hasPassword ? 'password' : 'info')
+    if (group.maxParticipants === group.currentParticipants) {
+      setModalType('max')
+    } else {
+      setModalType(group.hasPassword ? 'password' : 'info') // 기존 로직 유지
+    }
   }
 
   const closeModal = () => {
@@ -146,23 +150,17 @@ const PageWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  background-color: #f2f2f6;
+  background-color: #ffffff;
   padding: 20px;
   box-sizing: border-box;
   height: calc(100vh - 55px);
   overflow-y: auto;
-  overflow-x: hidden;
 `
 
 const PageContainer = styled.div`
-  padding: 10px 15px 20px 5px;
   display: flex;
   align-items: center;
   flex-direction: column;
-  background-color: #ffffff;
-  border-radius: 10px;
-  margin: 20px 0px;
-  height: 90%;
 `
 
 const PageTitle = styled.p`

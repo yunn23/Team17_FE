@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import React, { useState } from 'react'
+import React from 'react'
 import { useMutation } from '@tanstack/react-query'
 import Modal from './Modal'
 import { Team, verifyGroupPassword } from '../api/getGroup'
@@ -26,13 +26,10 @@ const GroupModal: React.FC<GroupModalProps> = ({
   onPasswordIncorrect,
   refreshGroups,
 }) => {
-  const [successModalOpen, setSuccessModalOpen] = useState(false)
-
   const joinMutation = useMutation({
     mutationFn: () => joinGroup(selectedGroup!),
     onSuccess: () => {
       onClose()
-      setSuccessModalOpen(true)
       refreshGroups()
     },
     onError: () => {
@@ -88,6 +85,17 @@ const GroupModal: React.FC<GroupModalProps> = ({
           </Modal>
         )
 
+      case 'max':
+        return (
+          <Modal isOpen onClose={onClose}>
+            <ModalTitle>그룹 가입</ModalTitle>
+            <ModalText>정원이 모두 찼습니다.</ModalText>
+            <ModalBtnContainer>
+              <CancelBtn onClick={onClose}>확인</CancelBtn>
+            </ModalBtnContainer>
+          </Modal>
+        )
+
       case 'info':
         return (
           <Modal isOpen onClose={onClose}>
@@ -130,33 +138,7 @@ const GroupModal: React.FC<GroupModalProps> = ({
         return null
     }
   }
-  return (
-    <>
-      {renderModalContent()}
-      {successModalOpen && (
-        <Modal
-          isOpen={successModalOpen}
-          onClose={() => {
-            setSuccessModalOpen(false)
-            onClose()
-          }}
-        >
-          <ModalTitle>Group Join Successful</ModalTitle>
-          <ModalText>You have successfully joined the group.</ModalText>
-          <ModalBtnContainer>
-            <DoneBtn
-              onClick={() => {
-                setSuccessModalOpen(false)
-                onClose()
-              }}
-            >
-              OK
-            </DoneBtn>
-          </ModalBtnContainer>
-        </Modal>
-      )}
-    </>
-  )
+  return renderModalContent()
 }
 
 GroupModal.defaultProps = {

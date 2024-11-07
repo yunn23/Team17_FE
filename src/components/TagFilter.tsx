@@ -82,8 +82,8 @@ const Button = styled.button<ButtonProps>`
   color: ${({ active }) => (active ? 'white' : '#768DCB')};
   border: 1px solid #768dcb;
   border-radius: 8px;
-  padding: 2px;
-  margin: 1px 2px;
+  padding: 3px 2px;
+  margin: 1px 3px;
   cursor: pointer;
   font-size: 10px;
   transition:
