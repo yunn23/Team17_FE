@@ -16,11 +16,13 @@ export interface Exercise {
 
 interface ExerciseListProps {
   exerciseList: Exercise[]
+  setTotalTime: (time: number) => void
   setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>
 }
 
 const ExerciseList: React.FC<ExerciseListProps> = ({
   exerciseList,
+  setTotalTime,
   setExerciseList,
 }) => {
   const queryClient = useQueryClient()
@@ -98,6 +100,15 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   ) => {
     setExerciseNew(event.target.value)
   }
+
+  useEffect(() => {
+    // exerciseList가 변경될 때마다 전체 시간 업데이트
+    const totalTime = exerciseList.reduce(
+      (total, exercise) => total + exercise.exerciseTime,
+      0
+    )
+    setTotalTime(totalTime)
+  }, [exerciseList, setTotalTime])
 
   const handleExerciseClick = async (exerciseId: number) => {
     const activeExercise = exerciseList.some((exercise) => exercise.isActive)

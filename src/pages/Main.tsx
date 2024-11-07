@@ -91,6 +91,7 @@ const Main = () => {
       <Container>
         <ExerciseList
           exerciseList={exerciseList}
+          setTotalTime={setTotalTime}
           setExerciseList={setExerciseList}
         />
       </Container>
