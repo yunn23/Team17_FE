@@ -11,23 +11,28 @@ import Loading from '../components/Loading'
 import DateSelect from '../components/DateSelect'
 import getMain from '../api/getMain'
 
-const Main = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date())
+const resetHour = 3
 
-  const resetHour = 3
-  const getCustomDate = (date: Date) => {
-    const adjustedDate = new Date(date)
+export const handleAdjustDate = (date: Date) => {
+  const adjustedDate = new Date(date)
 
-    // 만약 현재 시간이 새벽 3시 이전이라면 하루 전 날짜로 조정
-    if (date.getTime() < resetHour) {
-      adjustedDate.setDate(adjustedDate.getDate() - 1)
-    }
-
-    const year = adjustedDate.getFullYear()
-    const month = String(adjustedDate.getMonth() + 1).padStart(2, '0')
-    const day = String(adjustedDate.getDate()).padStart(2, '0')
-    return `${year}${month}${day}`
+  if (date.getHours() < resetHour) {
+    adjustedDate.setDate(adjustedDate.getDate() - 1)
   }
+  return adjustedDate
+}
+
+export const getCustomDate = (date: Date) => {
+
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}${month}${day}`
+}
+
+const Main = () => {
+  const newDate = new Date()
+  const [selectedDate, setSelectedDate] = useState(handleAdjustDate(newDate))  
   const formattedDate = getCustomDate(selectedDate)
   // eslint-disable-next-line spaced-comment
   //const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
