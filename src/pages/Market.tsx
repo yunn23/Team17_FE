@@ -1,7 +1,8 @@
 import styled from '@emotion/styled'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
-import getMarket from '../api/getMarket'
+import { useIntersectionObserver } from 'usehooks-ts'
+import getMarket, { MarketResponse } from '../api/getMarket'
 import Loading from '../components/Loading'
 import Error from '../components/Error'
 import marketTag from '../mocks/marketTag'
@@ -11,14 +12,20 @@ import getMarketView from '../api/getMarketView'
 const Market = () => {
   const [tagId, setTagId] = useState<number | undefined>(undefined)
   const [activeTag, setActiveTag] = useState<number | null>(null)
-  const [selectedProductId, setSelectedProductId] = useState<number | null>(
-    null
-  )
+  const [selectedProductId, setSelectedProductId] = useState<number | null>(null)
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, fetchNextPage, hasNextPage } = useInfiniteQuery<MarketResponse>({
     queryKey: ['market', tagId],
-    queryFn: () => getMarket(tagId),
-    retry: 1,
+    queryFn: ({ pageParam = 0 }) => getMarket(tagId, pageParam as number),
+    getNextPageParam: (lastPage) => !lastPage.last ? lastPage.pageable.pageNumber + 1 : undefined,
+    initialPageParam: 0,
+  })
+
+  const { ref } = useIntersectionObserver({
+    threshold: 0.1,
+    onChange: () => {
+      if (hasNextPage) fetchNextPage()
+    }
   })
 
   const toggleFilter = (tagIdTmp: number) => {
@@ -39,6 +46,8 @@ const Market = () => {
       retry: 1,
     })
 
+
+
   if (isLoading) return <Loading />
   if (isError) return <Error name="마켓화면" />
 
@@ -54,7 +63,7 @@ const Market = () => {
         onToggleFilter={toggleFilter}
       />
       <ProductWrapper>
-        {data?.content.map((product) => (
+        {data?.pages.flatMap((page) => page.content).map((product) => (
           <ProductLink
             key={product.productId}
             href={product.productUrl}
@@ -78,6 +87,7 @@ const Market = () => {
             </ProductContainer>
           </ProductLink>
         ))}
+        <div ref={ref} />
       </ProductWrapper>
     </MarketWrapper>
   )

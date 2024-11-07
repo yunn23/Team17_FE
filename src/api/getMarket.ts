@@ -15,13 +15,32 @@ interface Content {
   tag: Tags[]
 }
 
-interface MarketResponse {
-  content: Content[]
+interface Sort {
+  empty: boolean
+}
+interface Pageable {
+  pageNumber: number
+  pageSize: number
+  sort: Sort[]
+  offset: number
+  paged: boolean
+  unpaged: boolean
 }
 
-const getMarket = async (tagIds?: number): Promise<MarketResponse> => {
+export interface MarketResponse {
+  content: Content[]
+  pageable: Pageable
+  last: boolean
+}
+
+const getMarket = async (tagIds?: number, pageParam: number = 0): Promise<MarketResponse> => {
   const response = await axiosInstance.get('/api/market', {
-    params: tagIds ? { tagIds } : undefined,
+    params: {
+      tagIds,
+      size: null,
+      page: pageParam,
+      sort: null
+    }
   })
   return response.data
 }
