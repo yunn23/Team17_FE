@@ -16,14 +16,16 @@ interface TodayDiaryProps {
 }
 
 const TodayDiary: React.FC<TodayDiaryProps> = ({ diaryData }) => {
-
   const queryClient = useQueryClient()
   const diaryMenuRef = useRef<HTMLDivElement>(null)
   const [activeMenuId, setActiveMenuId] = useState<number | null>(null)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (diaryMenuRef.current && !diaryMenuRef.current.contains(event.target as Node)) {
+      if (
+        diaryMenuRef.current &&
+        !diaryMenuRef.current.contains(event.target as Node)
+      ) {
         setActiveMenuId(null)
       }
     }
@@ -42,7 +44,7 @@ const TodayDiary: React.FC<TodayDiaryProps> = ({ diaryData }) => {
     mutationFn: deleteDiaryApi,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['main'] })
-    }
+    },
   })
 
   const handleDeleteClick = (diaryId: number, event: React.MouseEvent) => {
@@ -61,7 +63,6 @@ const TodayDiary: React.FC<TodayDiaryProps> = ({ diaryData }) => {
       }
     }
 
-
   return (
     <TodayDiaryWrapper>
       <TitleContainer>
@@ -72,28 +73,27 @@ const TodayDiary: React.FC<TodayDiaryProps> = ({ diaryData }) => {
           <DiaryContainer key={diary.id}>
             <DiaryHeader>
               <DiaryTime>
-                {DateTime.fromISO(diary.createdAt, { zone: 'utc' })
-                  .setZone('Asia/Seoul')
-                  .toFormat('HH:mm')}
+                {DateTime.fromISO(diary.createdAt, { zone: 'utc' }).toFormat(
+                  'HH:mm'
+                )}
               </DiaryTime>
               <DiaryMenu
                 className="material-symbols-outlined"
-                onClick={handleListMenuClick(diary.id)}>
+                onClick={handleListMenuClick(diary.id)}
+              >
                 more_vert
               </DiaryMenu>
               {activeMenuId === diary.id && (
-                  <MenuContainer>
-                    <DeleteBtn
-                      className="deleteBtn"
-                      ref={diaryMenuRef}
-                      onClick={(event) =>
-                        handleDeleteClick(diary.id, event)
-                      }
-                    >
-                      일기 삭제하기
-                    </DeleteBtn>
-                  </MenuContainer>
-                )}
+                <MenuContainer>
+                  <DeleteBtn
+                    className="deleteBtn"
+                    ref={diaryMenuRef}
+                    onClick={(event) => handleDeleteClick(diary.id, event)}
+                  >
+                    일기 삭제하기
+                  </DeleteBtn>
+                </MenuContainer>
+              )}
             </DiaryHeader>
             <DiaryContent>{diary.memo}</DiaryContent>
           </DiaryContainer>
@@ -162,7 +162,7 @@ const DiaryTime = styled.div`
 
 const DiaryMenu = styled.div`
   justify-content: flex-end;
-  color: #5275D5;
+  color: #5275d5;
   font-weight: 300;
   margin-left: 235px;
   cursor: pointer;
