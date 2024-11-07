@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { DateTime } from 'luxon'
+// import { DateTime } from 'luxon'
 import Timer from '../components/Timer'
 import ExerciseList, { Exercise } from '../components/ExerciseList'
 import DiaryCreate from '../components/DiaryCreate'
@@ -14,7 +14,24 @@ import getMain from '../api/getMain'
 const Main = () => {
 
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
+
+  const resetHour = 3
+  const getCustomDate = (date: Date) => {
+    const adjustedDate = new Date(date)
+
+    // 만약 현재 시간이 새벽 3시 이전이라면 하루 전 날짜로 조정
+    if (date.getTime() < resetHour) {
+      adjustedDate.setDate(adjustedDate.getDate() - 1)
+    }
+
+    const year = adjustedDate.getFullYear()
+    const month = String(adjustedDate.getMonth() + 1).padStart(2, '0')
+    const day = String(adjustedDate.getDate()).padStart(2, '0')
+    return `${year}${month}${day}`
+  }
+  const formattedDate = getCustomDate(selectedDate)
+  // eslint-disable-next-line spaced-comment
+  //const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['main', formattedDate],
