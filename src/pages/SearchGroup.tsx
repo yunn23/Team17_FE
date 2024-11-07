@@ -46,7 +46,7 @@ const SearchGroup = () => {
 
   useEffect(() => {
     if (initialLoad) {
-      refetch().then(() => setInitialLoad(false)) // 첫 로딩 후 초기화
+      refetch().then(() => setInitialLoad(false))
     }
   }, [initialLoad, refetch])
 
@@ -162,6 +162,7 @@ const PageContainer = styled.div`
   background-color: #ffffff;
   border-radius: 10px;
   margin: 20px 0px;
+  height: 90%;
 `
 
 const PageTitle = styled.p`

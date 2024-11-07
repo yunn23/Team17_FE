@@ -25,7 +25,7 @@ const Loading = () => (
 )
 
 const MyGroup = () => {
-  const [groupType, setGroupType] = useState('joined')
+  const [groupType, setGroupType] = useState('all')
   const [isModalOpen, setModalOpen] = useState(false)
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false)
   const [selectedGroup, setSelectedGroup] = useState<MyTeam | null>(null)
@@ -67,11 +67,15 @@ const MyGroup = () => {
   if (groupsError || userError) return <Error />
 
   const filteredGroups =
-    groups?.content.filter((group) =>
-      groupType === 'joined'
-        ? group.leaderNickname !== currentUserNickname
-        : group.leaderNickname === currentUserNickname
-    ) || []
+    groups?.content.filter((group) => {
+      if (groupType === 'all') {
+        return true
+      }
+      if (groupType === 'joined') {
+        return group.leaderNickname !== currentUserNickname
+      }
+      return group.leaderNickname === currentUserNickname
+    }) || []
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setGroupType(event.target.value)
@@ -105,10 +109,10 @@ const MyGroup = () => {
 
   const handleAction = async () => {
     if (selectedGroup && selectedGroup.id) {
-      if (groupType === 'joined') {
-        await withdrawFromTeam(selectedGroup.id)
-      } else {
+      if (selectedGroup.leaderNickname === currentUserNickname) {
         await deleteTeam(selectedGroup.id)
+      } else {
+        await withdrawFromTeam(selectedGroup.id)
       }
       closeModal()
       queryClient.invalidateQueries({
@@ -134,7 +138,9 @@ const MyGroup = () => {
   }
 
   const modalContent =
-    groupType === 'joined' ? '그룹 탈퇴하기' : '그룹 삭제하기'
+    selectedGroup?.leaderNickname === currentUserNickname
+      ? '그룹 삭제하기'
+      : '그룹 탈퇴하기'
 
   return (
     <PageWrapper>
@@ -142,6 +148,7 @@ const MyGroup = () => {
         <PageTitle>나의 그룹</PageTitle>
         <DropdownContainer>
           <select value={groupType} onChange={handleSelectChange}>
+            <option value="all">전체 그룹</option>
             <option value="joined">가입한 그룹</option>
             <option value="created">내가 만든 그룹</option>
           </select>
@@ -156,7 +163,11 @@ const MyGroup = () => {
         <Modal isOpen={isSecondModalOpen} onClose={closeSecondModal}>
           <ModalTitle>{modalContent}</ModalTitle>
           <ModalText
-            placeholder={`'${selectedGroup?.teamName}'을 ${groupType === 'joined' ? '탈퇴하시겠습니까?' : '삭제하시겠습니까?'}`}
+            placeholder={`'${selectedGroup?.teamName}'을 ${
+              selectedGroup?.leaderNickname === currentUserNickname
+                ? '삭제하시겠습니까?'
+                : '탈퇴하시겠습니까?'
+            }`}
           />
           <ModalBtnContainer>
             <CancelBtn onClick={closeSecondModal}>취소</CancelBtn>
@@ -191,6 +202,7 @@ const PageContainer = styled.div`
   background-color: #ffffff;
   border-radius: 10px;
   margin: 20px 0px;
+  height: 90%;
 `
 
 const PageTitle = styled.p`

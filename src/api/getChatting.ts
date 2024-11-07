@@ -2,16 +2,16 @@ import axiosInstance from './axiosInstance'
 
 export interface ChatMessage {
   chatId: number
-  nickname: string
+  memberId: number
+  nickName: string
   message: string
-  createdAt: string
 }
 
 export const fetchInitialMessages = async (
-  roomId: string
+  groupId: string
 ): Promise<ChatMessage[]> => {
   const response = await axiosInstance.get<{ content: ChatMessage[] }>(
-    `/api/chat/room/${roomId}`
+    `/api/team/chatting/${groupId}`
   )
   return response.data.content
 }
