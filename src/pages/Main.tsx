@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
-// import { DateTime } from 'luxon'
 import Timer from '../components/Timer'
 import ExerciseList, { Exercise } from '../components/ExerciseList'
 import DiaryCreate from '../components/DiaryCreate'
@@ -23,7 +22,6 @@ export const handleAdjustDate = (date: Date) => {
 }
 
 export const getCustomDate = (date: Date) => {
-
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
@@ -32,7 +30,7 @@ export const getCustomDate = (date: Date) => {
 
 const Main = () => {
   const newDate = new Date()
-  const [selectedDate, setSelectedDate] = useState(handleAdjustDate(newDate))  
+  const [selectedDate, setSelectedDate] = useState(handleAdjustDate(newDate))
   const formattedDate = getCustomDate(selectedDate)
   // eslint-disable-next-line spaced-comment
   //const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')

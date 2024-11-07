@@ -33,14 +33,17 @@ export interface MarketResponse {
   last: boolean
 }
 
-const getMarket = async (tagIds?: number, pageParam: number = 0): Promise<MarketResponse> => {
+const getMarket = async (
+  tagIds?: number,
+  pageParam: number = 0
+): Promise<MarketResponse> => {
   const response = await axiosInstance.get('/api/market', {
     params: {
       tagIds,
       size: null,
       page: pageParam,
-      sort: null
-    }
+      sort: null,
+    },
   })
   return response.data
 }

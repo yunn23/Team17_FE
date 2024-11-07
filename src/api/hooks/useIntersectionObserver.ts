@@ -1,5 +1,5 @@
-import { InfiniteQueryObserverResult } from "@tanstack/react-query"
-import { useCallback, useEffect, useState } from "react"
+import { InfiniteQueryObserverResult } from '@tanstack/react-query'
+import { useCallback, useEffect, useState } from 'react'
 
 interface UseIntersectionObserverProps {
   threshold?: number
@@ -8,35 +8,34 @@ interface UseIntersectionObserverProps {
 }
 
 const useIntersectionObserver = ({
-    threshold = 0.1,
-    hasNextPage,
-    fetchNextPage
+  threshold = 0.1,
+  hasNextPage,
+  fetchNextPage,
 }: UseIntersectionObserverProps) => {
-    const [target, setTarget] = useState<HTMLDivElement | null | undefined>(null)
+  const [target, setTarget] = useState<HTMLDivElement | null | undefined>(null)
 
-    const observerCallback = useCallback(
-        (entries: IntersectionObserverEntry[]) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting && hasNextPage) {
-              fetchNextPage()
-            }
-          })
-        },
-        [hasNextPage, fetchNextPage]
-    )
+  const observerCallback = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && hasNextPage) {
+          fetchNextPage()
+        }
+      })
+    },
+    [hasNextPage, fetchNextPage]
+  )
 
-    useEffect(() => {
-        if (!target) return
-        
-        const observer = new IntersectionObserver(observerCallback, {
-            threshold
-        })
+  useEffect(() => {
+    if (!target) return
 
-        observer.observe(target)
-        
-    }, [observerCallback, threshold, target])
+    const observer = new IntersectionObserver(observerCallback, {
+      threshold,
+    })
 
-    return { setTarget }
+    observer.observe(target)
+  }, [observerCallback, threshold, target])
+
+  return { setTarget }
 }
 
 export default useIntersectionObserver
