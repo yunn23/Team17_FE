@@ -43,7 +43,7 @@ const TodayDiary: React.FC<TodayDiaryProps> = ({ diaryData }) => {
   const deleteDiary = useMutation({
     mutationFn: deleteDiaryApi,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['main'] })
+      queryClient.invalidateQueries({ queryKey: ['diary'] })
     },
   })
 
