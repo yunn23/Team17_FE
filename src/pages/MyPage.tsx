@@ -9,10 +9,12 @@ import Error from '../components/Error'
 import { formatTime } from '../components/Timer'
 import putNickName from '../api/putNickname'
 import Modal from '../components/Modal'
+import deleteMember from '../api/deleteMember'
 
 const MyPage = () => {
   const queryClient = useQueryClient()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false)
   const [newName, setNewName] = useState('')
 
   const { data, isLoading, isError } = useQuery({
@@ -21,6 +23,7 @@ const MyPage = () => {
     retry: 1,
   })
 
+  // 닉네임 변경 로직
   const changeNickname = useMutation({
     mutationFn: putNickName,
     onSuccess: () => {
@@ -45,6 +48,28 @@ const MyPage = () => {
     changeNickname.mutate(newName)
   }
 
+  // 회원 탈퇴 로직
+  const deleteProfile = useMutation({
+    mutationFn: deleteMember,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mypage'] })
+    }
+  })
+
+  const handleClickExit = () => {
+    setIsExitModalOpen(true)
+  }
+
+  const handleCloseExitModal = () => {
+    setIsExitModalOpen(false)
+  }
+
+  const handleExitSubmit = () => {
+    setIsExitModalOpen(false)
+    deleteProfile.mutate()
+  }
+
+
   if (isLoading) return <Loading />
   if (isError) return <Error name="마이페이지" />
 
@@ -56,7 +81,7 @@ const MyPage = () => {
         <PersonalInfo>
           <PersonalName>{data?.nickname}</PersonalName>
           <PersonalEmail>{data?.email}</PersonalEmail>
-          <ExitMember>회원 탈퇴하기</ExitMember>
+          <ExitMember onClick={handleClickExit}>회원 탈퇴하기</ExitMember>
         </PersonalInfo>
       </PersonalWrapper>
       <AttendWrapper>
@@ -83,15 +108,26 @@ const MyPage = () => {
         </WeeklyStatic>
       </StaticWrapper>
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-      <AddTitle>닉네임 변경</AddTitle>
-        <PutNickname
-          placeholder="변경할 닉네임을 작성하세요"
-          value={newName}
-          onChange={handleChangeName}
-        />
+        <AddTitle>닉네임 변경</AddTitle>
+          <PutNickname
+            placeholder="변경할 닉네임을 작성하세요"
+            value={newName}
+            onChange={handleChangeName}
+          />
         <ModalBtnContainer>
           <CancelBtn onClick={handleCloseModal}>취소</CancelBtn>
           <DoneBtn onClick={handleNameSubmit}>완료</DoneBtn>
+        </ModalBtnContainer>
+      </Modal>
+      <Modal isOpen={isExitModalOpen} onClose={handleCloseExitModal}>
+        <AddTitle>회원 탈퇴하기</AddTitle>
+        <ModalContent>
+          <ModalContentLine>정말 홈트라이를 탈퇴하시겠습니까?</ModalContentLine>
+          <ModalContentLine>지금까지의 운동 정보가 모두 사라집니다 🥲</ModalContentLine>
+        </ModalContent>
+        <ModalBtnContainer>
+          <CancelBtn onClick={handleCloseExitModal}>취소</CancelBtn>
+          <DoneBtn onClick={handleExitSubmit}>탈퇴</DoneBtn>
         </ModalBtnContainer>
       </Modal>
     </MypageWrapper>
@@ -157,6 +193,7 @@ const ExitMember = styled.div`
   color: #69779f;
   margin-top: 18px;
   text-decoration: underline;
+  cursor: pointer;
 `
 
 const AttendWrapper = styled.div`
@@ -250,6 +287,20 @@ const PutNickname = styled.input`
   box-sizing: border-box;
   border: none;
   outline: none;
+`
+
+const ModalContent = styled.div`
+  margin-top: 5px;
+  margin-bottom: 7px;
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+`
+
+const ModalContentLine = styled.div`
+  color: #5d5d5d;
+  margin-top: 5px;
+  font-size: 15px;
 `
 
 const ModalBtnContainer = styled.div`
