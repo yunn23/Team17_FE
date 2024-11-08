@@ -6,6 +6,7 @@ import Modal from './Modal'
 import postExercise from '../api/postExercise'
 import postStartExercise from '../api/postStartExercise'
 import deleteExerciseApi from '../api/deleteExerciseApi'
+import { handleAdjustDate } from '../pages/Main'
 
 export interface Exercise {
   exerciseId: number
@@ -29,7 +30,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   setExerciseList,
 }) => {
   const queryClient = useQueryClient()
-  const today = new Date()
+  const today = handleAdjustDate(new Date())
   const isToday = isSameDay(selectedDate, today)
 
   const [isModalOpen, setIsModalOpen] = useState(false)
