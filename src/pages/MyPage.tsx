@@ -1,18 +1,49 @@
 import styled from '@emotion/styled'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import Sneaker from '../assets/sneaker.png'
 import Personal from '../assets/personal.png'
 import getMypage from '../api/getMypage'
 import Loading from '../components/Loading'
 import Error from '../components/Error'
 import { formatTime } from '../components/Timer'
+import putNickName from '../api/putNickname'
+import Modal from '../components/Modal'
 
 const MyPage = () => {
+  const queryClient = useQueryClient()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [newName, setNewName] = useState('')
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ['mypage'],
     queryFn: getMypage,
     retry: 1,
   })
+
+  const changeNickname = useMutation({
+    mutationFn: putNickName,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mypage'] })
+    }
+  })
+
+  const handleClickName = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleChangeName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewName(event.target.value)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+  }
+
+  const handleNameSubmit = () => {
+    setIsModalOpen(false)
+    changeNickname.mutate(newName)
+  }
 
   if (isLoading) return <Loading />
   if (isError) return <Error name="마이페이지" />
@@ -21,7 +52,7 @@ const MyPage = () => {
     <MypageWrapper>
       <MypageTitle>마이페이지</MypageTitle>
       <PersonalWrapper>
-        <PersonalPicture src={Personal} width={90} />
+        <PersonalPicture src={Personal} width={90} onClick={handleClickName} />
         <PersonalInfo>
           <PersonalName>{data?.nickname}</PersonalName>
           <PersonalEmail>{data?.email}</PersonalEmail>
@@ -51,6 +82,18 @@ const MyPage = () => {
           <WeeklyTime>{formatTime(data?.weeklyTotal ?? 0)}</WeeklyTime>
         </WeeklyStatic>
       </StaticWrapper>
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+      <AddTitle>닉네임 변경</AddTitle>
+        <PutNickname
+          placeholder="변경할 닉네임을 작성하세요"
+          value={newName}
+          onChange={handleChangeName}
+        />
+        <ModalBtnContainer>
+          <CancelBtn onClick={handleCloseModal}>취소</CancelBtn>
+          <DoneBtn onClick={handleNameSubmit}>완료</DoneBtn>
+        </ModalBtnContainer>
+      </Modal>
     </MypageWrapper>
   )
 }
@@ -87,6 +130,7 @@ const PersonalPicture = styled.img`
   margin-right: 25px;
   margin-left: 5px;
   margin-bottom: 10px;
+  cursor: pointer;
 `
 
 const PersonalInfo = styled.div`
@@ -189,6 +233,42 @@ const WeeklyTitle = styled.div`
 
 const WeeklyTime = styled.div`
   color: #6d86cb;
+`
+
+const AddTitle = styled.div`
+  font-size: 20px;
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  box-sizing: border-box;
+`
+
+const PutNickname = styled.input`
+  width: 96%;
+  padding: 3px 7px;
+  margin: 10px 0px;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+`
+
+const ModalBtnContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+`
+
+const CancelBtn = styled.div`
+  padding: 5px 15px;
+  color: #969393;
+  cursor: pointer;
+`
+
+const DoneBtn = styled.div`
+  padding: 5px;
+  color: #6d86cb;
+  cursor: pointer;
 `
 
 export default MyPage
