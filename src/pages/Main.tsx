@@ -42,18 +42,26 @@ const Main = () => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['main', formattedDate],
     queryFn: () => getMain(formattedDate),
-    select : (mainData) => ({
+    select: (mainData) => ({
       totalTime: mainData.totalTime,
-      exerciseList: mainData.exerciseList
+      exerciseList: mainData.exerciseList,
     }),
     retry: 1,
   })
 
-  const { data: diaryData, isLoading: isDiaryLoading, isError: isDiaryError, fetchNextPage, hasNextPage } = useInfiniteQuery({
+  const {
+    data: diaryData,
+    isLoading: isDiaryLoading,
+    isError: isDiaryError,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
     queryKey: ['diary', formattedDate],
     queryFn: ({ pageParam = 0 }) => getMain(formattedDate, pageParam as number),
     getNextPageParam: (lastPage) =>
-      !lastPage.diaries.last ? lastPage.diaries.pageable.pageNumber + 1 : undefined,
+      !lastPage.diaries.last
+        ? lastPage.diaries.pageable.pageNumber + 1
+        : undefined,
     initialPageParam: 0,
   })
 
@@ -61,12 +69,16 @@ const Main = () => {
     threshold: 0.1,
     onChange: () => {
       if (hasNextPage) fetchNextPage()
-    }
+    },
   })
 
   const [totalTime, setTotalTime] = useState(data?.totalTime || 0)
-  const [exerciseList, setExerciseList] = useState<Exercise[]>(data?.exerciseList || [])
-  const [diary, setDiary] = useState(diaryData?.pages.flatMap((page) => page.diaries.content || []))
+  const [exerciseList, setExerciseList] = useState<Exercise[]>(
+    data?.exerciseList || []
+  )
+  const [diary, setDiary] = useState(
+    diaryData?.pages.flatMap((page) => page.diaries.content || [])
+  )
 
   const isAnyActive = exerciseList?.some((exercise) => exercise.isActive)
 
@@ -74,14 +86,15 @@ const Main = () => {
     if (data) {
       const fetchedTotalTime = data?.totalTime || 0
       const fetchedExerciseList = data?.exerciseList || []
-      const fetchedDiary = diaryData?.pages.flatMap((page) => page.diaries.content || [])
+      const fetchedDiary = diaryData?.pages.flatMap(
+        (page) => page.diaries.content || []
+      )
 
       setTotalTime(fetchedTotalTime)
       setExerciseList(fetchedExerciseList)
       setDiary(fetchedDiary)
     }
   }, [data, diaryData?.pages])
-
 
   useEffect(() => {
     const activeExercise = exerciseList.find(
@@ -90,7 +103,9 @@ const Main = () => {
     if (activeExercise && activeExercise.startTime) {
       const elapsedTime =
         Date.now() - new Date(activeExercise.startTime).getTime()
-      setTotalTime((prevTime) => (prevTime !== undefined ? prevTime + elapsedTime : elapsedTime))
+      setTotalTime((prevTime) =>
+        prevTime !== undefined ? prevTime + elapsedTime : elapsedTime
+      )
     }
   }, [exerciseList])
 

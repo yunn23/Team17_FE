@@ -124,8 +124,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   }, [exerciseList, setTotalTime])
 
   const handleExerciseClick = async (exerciseId: number) => {
-
-    if(!isToday) return
+    if (!isToday) return
 
     const activeExercise = exerciseList.some((exercise) => exercise.isActive)
 
@@ -177,7 +176,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const handleListMenuClick =
     (exerciseId: number) => (event: React.MouseEvent) => {
-
       event?.stopPropagation()
 
       if (activeMenuId !== exerciseId) {
@@ -215,9 +213,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     <ExerciseWrapper>
       <TitleContainer>
         <Title>상세 운동 내역</Title>
-        {isToday && (
-          <AddButton onClick={handleAddClick}>+</AddButton>
-        )}
+        {isToday && <AddButton onClick={handleAddClick}>+</AddButton>}
       </TitleContainer>
       <ListContainer>
         {exerciseList.length > 0 ? (

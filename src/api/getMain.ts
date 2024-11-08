@@ -3,28 +3,31 @@ import axiosInstance from './axiosInstance'
 import { Pageable } from './getMarket'
 
 interface DiaryContent {
-    id: number
-    createdAt: string
-    memo: string
+  id: number
+  createdAt: string
+  memo: string
 }
 
 interface Diary {
-    content: DiaryContent[]
-    pageable: Pageable
-    last: boolean
+  content: DiaryContent[]
+  pageable: Pageable
+  last: boolean
 }
 interface MainResponse {
-    totalTime?: number
-    exerciseList?: Exercise[]
-    diaries: Diary
+  totalTime?: number
+  exerciseList?: Exercise[]
+  diaries: Diary
 }
 
-const getMain = async (formattedDate: string, pageParam: number = 0): Promise<MainResponse> => {
+const getMain = async (
+  formattedDate: string,
+  pageParam: number = 0
+): Promise<MainResponse> => {
   const response = await axiosInstance.get('/api', {
     params: {
       date: formattedDate,
       page: pageParam,
-      size: 5
+      size: 5,
     },
   })
   return response.data
