@@ -1,39 +1,51 @@
 import styled from '@emotion/styled'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { DateTime } from 'luxon'
 import Timer from '../components/Timer'
 import ExerciseList, { Exercise } from '../components/ExerciseList'
 import DiaryCreate from '../components/DiaryCreate'
-import axiosInstance from '../api/axiosInstance'
 import TodayDiary from '../components/TodayDiary'
 import Error from '../components/Error'
 import Loading from '../components/Loading'
 import DateSelect from '../components/DateSelect'
+import getMain from '../api/getMain'
+
+const resetHour = 3
+
+export const handleAdjustDate = (date: Date) => {
+  const adjustedDate = new Date(date)
+
+  if (date.getHours() < resetHour) {
+    adjustedDate.setDate(adjustedDate.getDate() - 1)
+  }
+  return adjustedDate
+}
+
+export const getCustomDate = (date: Date) => {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}${month}${day}`
+}
 
 const Main = () => {
-  const [totalTime, setTotalTime] = useState(0)
-  const [exerciseList, setExerciseList] = useState<Exercise[]>([])
-  const [diary, setDiary] = useState([])
-
-  const [selectedDate, setSelectedDate] = useState(new Date())
-
-  const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
-
-  const fetchExercise = useCallback(async () => {
-    const response = await axiosInstance.get('/api', {
-      params: {
-        date: formattedDate,
-      },
-    })
-    return response.data
-  }, [formattedDate])
+  const newDate = new Date()
+  const [selectedDate, setSelectedDate] = useState(handleAdjustDate(newDate))
+  const formattedDate = getCustomDate(selectedDate)
+  // eslint-disable-next-line spaced-comment
+  //const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['main', formattedDate],
-    queryFn: fetchExercise,
+    queryFn: () => getMain(formattedDate),
     retry: 1,
   })
+
+  const [totalTime, setTotalTime] = useState(data?.totalTime)
+  const [exerciseList, setExerciseList] = useState<Exercise[]>(
+    data?.exerciseList || []
+  )
+  const [diary, setDiary] = useState(data?.diary || [])
 
   const isAnyActive = exerciseList?.some((exercise) => exercise.isActive)
 
@@ -43,7 +55,7 @@ const Main = () => {
       const fetchedExerciseList = data?.exerciseList || []
       const fetchedDiary = data?.diaries.content || []
 
-      setTotalTime(Number(fetchedTotalTime))
+      setTotalTime(fetchedTotalTime)
       setExerciseList(fetchedExerciseList)
       setDiary(fetchedDiary)
     }

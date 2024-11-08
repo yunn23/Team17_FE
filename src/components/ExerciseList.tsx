@@ -28,6 +28,13 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   const queryClient = useQueryClient()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [exerciseNew, setExerciseNew] = useState('')
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [deletedExerciseId, setDeletedExerciseId] = useState<number | null>(
+    null
+  )
+  const [deletedExerciseName, setDeletedExerciseName] = useState<string | null>(
+    null
+  )
   const [activeMenuId, setActiveMenuId] = useState<number | null>(null)
 
   const menuRef = useRef<HTMLDivElement>(null)
@@ -67,11 +74,32 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     },
   })
 
-  const handleDeleteClick = (exerciseId: number, event: React.MouseEvent) => {
+  const handleDeleteClick = (
+    exerciseId: number,
+    exerciseName: string,
+    event: React.MouseEvent
+  ) => {
     event.stopPropagation()
     // eslint-disable-next-line no-console
     console.log('Delete 버튼 클릭')
-    deleteExercise.mutate(exerciseId)
+    setDeletedExerciseId(exerciseId)
+    setDeletedExerciseName(exerciseName)
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (deletedExerciseId !== null) {
+      await deleteExercise.mutateAsync(deletedExerciseId)
+      setIsDeleteModalOpen(false)
+      setDeletedExerciseId(null)
+      setDeletedExerciseName(null)
+    }
+  }
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false)
+    setDeletedExerciseId(null)
+    setDeletedExerciseName(null)
   }
 
   const handleExerciseNewChange = (
@@ -207,7 +235,11 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                       className="deleteBtn"
                       ref={menuRef}
                       onClick={(event) =>
-                        handleDeleteClick(exercise.exerciseId, event)
+                        handleDeleteClick(
+                          exercise.exerciseId,
+                          exercise.exerciseName,
+                          event
+                        )
                       }
                     >
                       운동 삭제하기
@@ -231,6 +263,19 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
         <ModalBtnContainer>
           <CancelBtn onClick={handleCloseModal}>취소</CancelBtn>
           <DoneBtn onClick={handleExerciseSubmit}>완료</DoneBtn>
+        </ModalBtnContainer>
+      </Modal>
+      <Modal isOpen={isDeleteModalOpen} onClose={handleCancelDelete}>
+        <AddTitle>운동 삭제</AddTitle>
+        <DeleteBody>
+          <DeleteBodyLine>
+            &apos;{deletedExerciseName}&apos;을(를) 삭제하시겠습니까?
+          </DeleteBodyLine>
+          <DeleteBodyLine>삭제한 운동은 복구되지 않습니다</DeleteBodyLine>
+        </DeleteBody>
+        <ModalBtnContainer>
+          <CancelBtn onClick={handleCancelDelete}>취소</CancelBtn>
+          <DoneBtn onClick={handleConfirmDelete}>삭제</DoneBtn>
         </ModalBtnContainer>
       </Modal>
     </ExerciseWrapper>
@@ -379,6 +424,20 @@ const NoExerciseMessage = styled.div`
   font-size: 14px;
   margin-top: 25px;
   margin-bottom: 30px;
+`
+
+const DeleteBody = styled.div`
+  margin-top: 5px;
+  margin-bottom: 7px;
+  margin-right: 50px;
+  display: flex;
+  flex-direction: column;
+`
+
+const DeleteBodyLine = styled.div`
+  color: #5d5d5d;
+  margin-top: 5px;
+  font-size: 15px;
 `
 
 export default ExerciseList
