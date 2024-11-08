@@ -31,7 +31,7 @@ const DiaryCreate = () => {
     mutationFn: postDiary,
     onSuccess: () => {
       setNewDiary('')
-      queryClient.invalidateQueries({ queryKey: ['main'] })
+      queryClient.invalidateQueries({ queryKey: ['diary'] })
     },
   })
 
