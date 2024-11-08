@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { useEffect, useRef, useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { isSameDay } from 'date-fns'
 import Modal from './Modal'
 import postExercise from '../api/postExercise'
 import postStartExercise from '../api/postStartExercise'
@@ -15,18 +16,31 @@ export interface Exercise {
 }
 
 interface ExerciseListProps {
+  selectedDate: Date
   exerciseList: Exercise[]
   setTotalTime: (time: number) => void
   setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>
 }
 
 const ExerciseList: React.FC<ExerciseListProps> = ({
+  selectedDate,
   exerciseList,
   setTotalTime,
   setExerciseList,
 }) => {
+  const queryClient = useQueryClient()
+  const today = new Date()
+  const isToday = isSameDay(selectedDate, today)
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [exerciseNew, setExerciseNew] = useState('')
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [deletedExerciseId, setDeletedExerciseId] = useState<number | null>(
+    null
+  )
+  const [deletedExerciseName, setDeletedExerciseName] = useState<string | null>(
+    null
+  )
   const [activeMenuId, setActiveMenuId] = useState<number | null>(null)
 
   const menuRef = useRef<HTMLDivElement>(null)
@@ -50,6 +64,9 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const addExercise = useMutation({
     mutationFn: postExercise,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['main'] })
+    },
   })
 
   const startExercise = useMutation({
@@ -58,13 +75,37 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const deleteExercise = useMutation({
     mutationFn: deleteExerciseApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['main'] })
+    },
   })
 
-  const handleDeleteClick = (exerciseId: number, event: React.MouseEvent) => {
+  const handleDeleteClick = (
+    exerciseId: number,
+    exerciseName: string,
+    event: React.MouseEvent
+  ) => {
     event.stopPropagation()
     // eslint-disable-next-line no-console
     console.log('Delete 버튼 클릭')
-    deleteExercise.mutate(exerciseId)
+    setDeletedExerciseId(exerciseId)
+    setDeletedExerciseName(exerciseName)
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (deletedExerciseId !== null) {
+      await deleteExercise.mutateAsync(deletedExerciseId)
+      setIsDeleteModalOpen(false)
+      setDeletedExerciseId(null)
+      setDeletedExerciseName(null)
+    }
+  }
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false)
+    setDeletedExerciseId(null)
+    setDeletedExerciseName(null)
   }
 
   const handleExerciseNewChange = (
@@ -83,6 +124,8 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   }, [exerciseList, setTotalTime])
 
   const handleExerciseClick = async (exerciseId: number) => {
+    if (!isToday) return
+
     const activeExercise = exerciseList.some((exercise) => exercise.isActive)
 
     // 다른 운동을 하고 있는 경우, 아무것도 하지 않음
@@ -170,7 +213,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     <ExerciseWrapper>
       <TitleContainer>
         <Title>상세 운동 내역</Title>
-        <AddButton onClick={handleAddClick}>+</AddButton>
+        {isToday && <AddButton onClick={handleAddClick}>+</AddButton>}
       </TitleContainer>
       <ListContainer>
         {exerciseList.length > 0 ? (
@@ -178,6 +221,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
             <ListElement
               key={exercise.exerciseId}
               isActive={exercise.isActive}
+              isToday={isToday}
               onClick={() => handleExerciseClick(exercise.exerciseId)}
             >
               <LeftContainer>
@@ -200,7 +244,11 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
                       className="deleteBtn"
                       ref={menuRef}
                       onClick={(event) =>
-                        handleDeleteClick(exercise.exerciseId, event)
+                        handleDeleteClick(
+                          exercise.exerciseId,
+                          exercise.exerciseName,
+                          event
+                        )
                       }
                     >
                       운동 삭제하기
@@ -224,6 +272,19 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
         <ModalBtnContainer>
           <CancelBtn onClick={handleCloseModal}>취소</CancelBtn>
           <DoneBtn onClick={handleExerciseSubmit}>완료</DoneBtn>
+        </ModalBtnContainer>
+      </Modal>
+      <Modal isOpen={isDeleteModalOpen} onClose={handleCancelDelete}>
+        <AddTitle>운동 삭제</AddTitle>
+        <ModalBody>
+          <ModalBodyLine>
+            &apos;{deletedExerciseName}&apos;을(를) 삭제하시겠습니까?
+          </ModalBodyLine>
+          <ModalBodyLine>삭제한 운동은 복구되지 않습니다</ModalBodyLine>
+        </ModalBody>
+        <ModalBtnContainer>
+          <CancelBtn onClick={handleCancelDelete}>취소</CancelBtn>
+          <DoneBtn onClick={handleConfirmDelete}>삭제</DoneBtn>
         </ModalBtnContainer>
       </Modal>
     </ExerciseWrapper>
@@ -262,12 +323,12 @@ const ListContainer = styled.div`
   padding: 5px 0px;
 `
 
-const ListElement = styled.div<ListElementProps>`
+const ListElement = styled.div<ListElementProps & { isToday: boolean }>`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  cursor: pointer;
+  cursor: ${({ isToday }) => (isToday ? 'pointer' : 'default')};
   padding: 9px 0px;
   background-color: ${({ isActive }) => (isActive ? '#DCEFFF' : 'transparent')};
   border-radius: 5px;
@@ -307,6 +368,7 @@ const MenuIcon = styled.div`
   color: #828282;
   font-weight: 300;
   padding: 0 0 0 10px;
+  cursor: pointer;
 `
 
 const MenuContainer = styled.div`
@@ -372,6 +434,20 @@ const NoExerciseMessage = styled.div`
   font-size: 14px;
   margin-top: 25px;
   margin-bottom: 30px;
+`
+
+const ModalBody = styled.div`
+  margin-top: 5px;
+  margin-bottom: 7px;
+  margin-right: 50px;
+  display: flex;
+  flex-direction: column;
+`
+
+const ModalBodyLine = styled.div`
+  color: #5d5d5d;
+  margin-top: 5px;
+  font-size: 15px;
 `
 
 export default ExerciseList
