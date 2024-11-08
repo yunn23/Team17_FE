@@ -276,12 +276,12 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
       </Modal>
       <Modal isOpen={isDeleteModalOpen} onClose={handleCancelDelete}>
         <AddTitle>운동 삭제</AddTitle>
-        <DeleteBody>
-          <DeleteBodyLine>
+        <ModalBody>
+          <ModalBodyLine>
             &apos;{deletedExerciseName}&apos;을(를) 삭제하시겠습니까?
-          </DeleteBodyLine>
-          <DeleteBodyLine>삭제한 운동은 복구되지 않습니다</DeleteBodyLine>
-        </DeleteBody>
+          </ModalBodyLine>
+          <ModalBodyLine>삭제한 운동은 복구되지 않습니다</ModalBodyLine>
+        </ModalBody>
         <ModalBtnContainer>
           <CancelBtn onClick={handleCancelDelete}>취소</CancelBtn>
           <DoneBtn onClick={handleConfirmDelete}>삭제</DoneBtn>
@@ -436,7 +436,7 @@ const NoExerciseMessage = styled.div`
   margin-bottom: 30px;
 `
 
-const DeleteBody = styled.div`
+const ModalBody = styled.div`
   margin-top: 5px;
   margin-bottom: 7px;
   margin-right: 50px;
@@ -444,7 +444,7 @@ const DeleteBody = styled.div`
   flex-direction: column;
 `
 
-const DeleteBodyLine = styled.div`
+const ModalBodyLine = styled.div`
   color: #5d5d5d;
   margin-top: 5px;
   font-size: 15px;
