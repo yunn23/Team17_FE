@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { useState, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { useIntersectionObserver } from 'usehooks-ts'
 import Timer from '../components/Timer'
 import ExerciseList, { Exercise } from '../components/ExerciseList'
 import DiaryCreate from '../components/DiaryCreate'
@@ -35,31 +36,45 @@ const Main = () => {
   // eslint-disable-next-line spaced-comment
   //const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
-  const { data, isLoading, isError } = useQuery({
+  // const { data, isLoading, isError } = useQuery({
+  //   queryKey: ['main', formattedDate],
+  //   queryFn: () => getMain(formattedDate),
+  //   retry: 1,
+  // })
+
+  const { data, isLoading, isError, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ['main', formattedDate],
-    queryFn: () => getMain(formattedDate),
-    retry: 1,
+    queryFn: ({ pageParam = 0 }) => getMain(formattedDate, pageParam as number),
+    getNextPageParam: (lastPage) =>
+      !lastPage.diaries.last ? lastPage.diaries.pageable.pageNumber + 1 : undefined,
+    initialPageParam: 0,
   })
 
-  const [totalTime, setTotalTime] = useState(data?.totalTime)
-  const [exerciseList, setExerciseList] = useState<Exercise[]>(
-    data?.exerciseList || []
-  )
-  const [diary, setDiary] = useState(data?.diary || [])
+  const { ref } = useIntersectionObserver({
+    threshold: 0.1,
+    onChange: () => {
+      if (hasNextPage) fetchNextPage()
+    }
+  })
+
+  const [totalTime, setTotalTime] = useState(data?.pages.reduce((acc, page) => acc + (page.totalTime || 0), 0))
+  const [exerciseList, setExerciseList] = useState<Exercise[]>([])
+  const [diary, setDiary] = useState(data?.pages.flatMap((page) => page.diaries.content || []))
 
   const isAnyActive = exerciseList?.some((exercise) => exercise.isActive)
 
   useEffect(() => {
     if (data) {
-      const fetchedTotalTime = data?.totalTime || 0
-      const fetchedExerciseList = data?.exerciseList || []
-      const fetchedDiary = data?.diaries.content || []
+      const fetchedTotalTime = data.pages.reduce((acc, page) => acc + (page.totalTime || 0), 0)
+      const fetchedExerciseList = data.pages.flatMap((page) => page.exerciseList || [])
+      const fetchedDiary = data.pages.flatMap((page) => page.diaries.content || [])
 
       setTotalTime(fetchedTotalTime)
       setExerciseList(fetchedExerciseList)
       setDiary(fetchedDiary)
     }
   }, [data])
+
 
   useEffect(() => {
     const activeExercise = exerciseList.find(
@@ -68,7 +83,7 @@ const Main = () => {
     if (activeExercise && activeExercise.startTime) {
       const elapsedTime =
         Date.now() - new Date(activeExercise.startTime).getTime()
-      setTotalTime((prevTime: number) => prevTime + elapsedTime)
+      setTotalTime((prevTime) => (prevTime !== undefined ? prevTime + elapsedTime : elapsedTime))
     }
   }, [exerciseList])
 
@@ -85,7 +100,7 @@ const Main = () => {
           setSelectedDate={setSelectedDate}
         />
         <Timer
-          totalTime={totalTime}
+          totalTime={totalTime ?? 0}
           setExerciseList={setExerciseList}
           isAnyActive={isAnyActive}
           selectedDate={selectedDate}
@@ -103,8 +118,9 @@ const Main = () => {
         <DiaryCreate />
       </Container>
       <Container>
-        <TodayDiary diaryData={diary} />
+        <TodayDiary diaryData={diary || []} />
       </Container>
+      <div ref={ref} />
     </MainWrapper>
   )
 }

@@ -18,7 +18,8 @@ interface Content {
 interface Sort {
   empty: boolean
 }
-interface Pageable {
+
+export interface Pageable {
   pageNumber: number
   pageSize: number
   sort: Sort[]
