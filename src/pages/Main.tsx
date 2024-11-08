@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import { useState, useEffect } from 'react'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useIntersectionObserver } from 'usehooks-ts'
+import { isSameDay } from 'date-fns'
 import Timer from '../components/Timer'
 import ExerciseList, { Exercise } from '../components/ExerciseList'
 import DiaryCreate from '../components/DiaryCreate'
@@ -33,6 +34,8 @@ const Main = () => {
   const newDate = new Date()
   const [selectedDate, setSelectedDate] = useState(handleAdjustDate(newDate))
   const formattedDate = getCustomDate(selectedDate)
+
+  const today = new Date()
   // eslint-disable-next-line spaced-comment
   //const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
@@ -118,9 +121,11 @@ const Main = () => {
           setExerciseList={setExerciseList}
         />
       </Container>
-      <Container>
-        <DiaryCreate />
-      </Container>
+      {isSameDay(selectedDate, today) && (
+        <Container>
+          <DiaryCreate />
+        </Container>
+      )}
       <Container>
         <TodayDiary diaryData={diary || []} />
       </Container>
