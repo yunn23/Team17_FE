@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { DayPicker } from 'react-day-picker'
 import 'react-day-picker/style.css'
-import { format, isSameDay } from 'date-fns'
+import { format, isAfter, isSameDay } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import styled from '@emotion/styled'
 
@@ -31,7 +31,7 @@ const DateSelect: React.FC<DateSelectProps> = ({
   }
 
   const handleDateClick = () => {
-    setIsCalendarOpen(!isCalendarOpen)
+    setIsCalendarOpen((prev) => !prev)
   }
 
   useEffect(() => {
@@ -73,6 +73,7 @@ const DateSelect: React.FC<DateSelectProps> = ({
             selected={selectedDate}
             onSelect={handleDateSelect}
             locale={ko}
+            disabled={(date) => isAfter(date, today)}
           />
         </CalendarContainer>
       )}
@@ -80,13 +81,16 @@ const DateSelect: React.FC<DateSelectProps> = ({
   )
 }
 
-const DateSelectWrapper = styled.div``
+const DateSelectWrapper = styled.div`
+  position: relative;
+`
 
 const DateSelectContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 `
 
 const DateSelecterLeft = styled.div`
@@ -117,6 +121,9 @@ const CalendarContainer = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   z-index: 10;
+  position: absolute;
+  right: -17px;
+  top: 0px;
 `
 
 export default DateSelect
