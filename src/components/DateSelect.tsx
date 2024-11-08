@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { DayPicker } from 'react-day-picker'
 import 'react-day-picker/style.css'
-import { format } from 'date-fns'
+import { format, isSameDay } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import styled from '@emotion/styled'
 
@@ -19,6 +19,8 @@ const DateSelect: React.FC<DateSelectProps> = ({
   })
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false)
   const calendarRef = useRef<HTMLDivElement>(null)
+  const today = new Date()
+  const isToday = isSameDay(selectedDate, today)
 
   const handlePrev = () => {
     setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() - 1)))
@@ -58,9 +60,11 @@ const DateSelect: React.FC<DateSelectProps> = ({
   return (
     <DateSelectWrapper>
       <DateSelectContainer>
-        <DateSelecter onClick={handlePrev}>{'<'}</DateSelecter>
+        <DateSelecterLeft onClick={handlePrev}>{'<'}</DateSelecterLeft>
         <DateSelection onClick={handleDateClick}>{formattedDate}</DateSelection>
-        <DateSelecter onClick={handleNext}>{'>'}</DateSelecter>
+        <DateSelecterRight isToday={isToday} onClick={handleNext}>
+          {'>'}
+        </DateSelecterRight>
       </DateSelectContainer>
       {isCalendarOpen && (
         <CalendarContainer ref={calendarRef}>
@@ -85,10 +89,17 @@ const DateSelectContainer = styled.div`
   align-items: center;
 `
 
-const DateSelecter = styled.div`
+const DateSelecterLeft = styled.div`
   font-size: 25px;
   cursor: pointer;
   font-weight: 500;
+`
+
+const DateSelecterRight = styled.div<{ isToday: boolean }>`
+  font-size: 25px;
+  cursor: ${({ isToday }) => (isToday ? 'default' : 'pointer')};
+  font-weight: 500;
+  visibility: ${({ isToday }) => (isToday ? 'hidden' : 'visible')};
 `
 
 const DateSelection = styled.div`
