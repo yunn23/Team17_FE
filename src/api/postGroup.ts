@@ -1,16 +1,12 @@
 import axiosInstance from './axiosInstance'
 import { Team } from './getGroup'
 
-interface Tag {
-  tagId: number
-}
-
 interface GroupData {
   teamName: string
   teamDescription: string
   maxParticipants: number
   password: string | null | undefined
-  tagIdList: Tag[]
+  tagIdList: number[]
 }
 
 const postGroup = async ({
@@ -25,7 +21,7 @@ const postGroup = async ({
     teamDescription,
     maxParticipants,
     password,
-    tagIdList: tagIdList.map((tag) => ({ tagId: tag.tagId })),
+    tagIdList
   })
   return response.data
 }

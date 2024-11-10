@@ -80,26 +80,15 @@ const AddGroup = () => {
       setModalOpen(true)
       return
     }
-    if (activeFilters.length === 0) {
-      setModalMessage('태그를 선택해주세요.')
-      setModalOpen(true)
-      return
-    }
 
     const groupData = {
       teamName: inputs.teamname,
       teamDescription: inputs.comment,
       maxParticipants: Number(inputs.participant),
       password: inputs.password ? inputs.password : null,
-      tagIdList: activeFilters.map((id) => ({ tagId: id })),
+      tagIdList: activeFilters,
     }
-    postGroup({
-      teamName: groupData.teamName,
-      teamDescription: groupData.teamDescription,
-      maxParticipants: groupData.maxParticipants,
-      password: groupData.password,
-      tagIdList: groupData.tagIdList,
-    })
+    postGroup(groupData)
       .then(() => {
         setSubmissionSuccess(true)
         navigate('/searchgroup')
