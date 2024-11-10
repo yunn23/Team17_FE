@@ -37,7 +37,7 @@ const Main = () => {
   const formattedDate = getCustomDate(selectedDate)
   const [isWarningOpen, setIsWarningOpen] = useState(false)
 
-  const today = new Date()
+  const today = handleAdjustDate(new Date())
   // eslint-disable-next-line spaced-comment
   //const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
