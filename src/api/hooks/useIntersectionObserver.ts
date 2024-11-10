@@ -7,7 +7,7 @@ interface UseIntersectionObserverProps {
 
 const useIntersectionObserver = ({
   threshold = 0.1,
-  onChange
+  onChange,
 }: UseIntersectionObserverProps) => {
   const [target, setTarget] = useState<HTMLDivElement | null | undefined>(null)
 
@@ -30,7 +30,7 @@ const useIntersectionObserver = ({
     })
 
     observer.observe(target)
-    
+
     return () => {
       if (target) {
         observer.unobserve(target)
