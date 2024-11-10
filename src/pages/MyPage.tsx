@@ -1,18 +1,73 @@
 import styled from '@emotion/styled'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import Sneaker from '../assets/sneaker.png'
 import Personal from '../assets/personal.png'
 import getMypage from '../api/getMypage'
 import Loading from '../components/Loading'
 import Error from '../components/Error'
 import { formatTime } from '../components/Timer'
+import putNickName from '../api/putNickname'
+import Modal from '../components/Modal'
+import deleteMember from '../api/deleteMember'
 
 const MyPage = () => {
+  const queryClient = useQueryClient()
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isExitModalOpen, setIsExitModalOpen] = useState(false)
+  const [newName, setNewName] = useState('')
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ['mypage'],
     queryFn: getMypage,
     retry: 1,
   })
+
+  // 닉네임 변경 로직
+  const changeNickname = useMutation({
+    mutationFn: putNickName,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mypage'] })
+    },
+  })
+
+  const handleClickName = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleChangeName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewName(event.target.value)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+  }
+
+  const handleNameSubmit = () => {
+    setIsModalOpen(false)
+    changeNickname.mutate(newName)
+  }
+
+  // 회원 탈퇴 로직
+  const deleteProfile = useMutation({
+    mutationFn: deleteMember,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mypage'] })
+    },
+  })
+
+  const handleClickExit = () => {
+    setIsExitModalOpen(true)
+  }
+
+  const handleCloseExitModal = () => {
+    setIsExitModalOpen(false)
+  }
+
+  const handleExitSubmit = () => {
+    setIsExitModalOpen(false)
+    deleteProfile.mutate()
+  }
 
   if (isLoading) return <Loading />
   if (isError) return <Error name="마이페이지" />
@@ -21,11 +76,11 @@ const MyPage = () => {
     <MypageWrapper>
       <MypageTitle>마이페이지</MypageTitle>
       <PersonalWrapper>
-        <PersonalPicture src={Personal} width={90} />
+        <PersonalPicture src={Personal} width={90} onClick={handleClickName} />
         <PersonalInfo>
           <PersonalName>{data?.nickname}</PersonalName>
           <PersonalEmail>{data?.email}</PersonalEmail>
-          <ExitMember>회원 탈퇴하기</ExitMember>
+          <ExitMember onClick={handleClickExit}>회원 탈퇴하기</ExitMember>
         </PersonalInfo>
       </PersonalWrapper>
       <AttendWrapper>
@@ -51,6 +106,31 @@ const MyPage = () => {
           <WeeklyTime>{formatTime(data?.weeklyTotal ?? 0)}</WeeklyTime>
         </WeeklyStatic>
       </StaticWrapper>
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+        <AddTitle>닉네임 변경</AddTitle>
+        <PutNickname
+          placeholder="변경할 닉네임을 작성하세요"
+          value={newName}
+          onChange={handleChangeName}
+        />
+        <ModalBtnContainer>
+          <CancelBtn onClick={handleCloseModal}>취소</CancelBtn>
+          <DoneBtn onClick={handleNameSubmit}>완료</DoneBtn>
+        </ModalBtnContainer>
+      </Modal>
+      <Modal isOpen={isExitModalOpen} onClose={handleCloseExitModal}>
+        <AddTitle>회원 탈퇴하기</AddTitle>
+        <ModalContent>
+          <ModalContentLine>정말 홈트라이를 탈퇴하시겠습니까?</ModalContentLine>
+          <ModalContentLine>
+            지금까지의 운동 정보가 모두 사라집니다 🥲
+          </ModalContentLine>
+        </ModalContent>
+        <ModalBtnContainer>
+          <CancelBtn onClick={handleCloseExitModal}>취소</CancelBtn>
+          <DoneBtn onClick={handleExitSubmit}>탈퇴</DoneBtn>
+        </ModalBtnContainer>
+      </Modal>
     </MypageWrapper>
   )
 }
@@ -87,6 +167,7 @@ const PersonalPicture = styled.img`
   margin-right: 25px;
   margin-left: 5px;
   margin-bottom: 10px;
+  cursor: pointer;
 `
 
 const PersonalInfo = styled.div`
@@ -113,6 +194,7 @@ const ExitMember = styled.div`
   color: #69779f;
   margin-top: 18px;
   text-decoration: underline;
+  cursor: pointer;
 `
 
 const AttendWrapper = styled.div`
@@ -189,6 +271,56 @@ const WeeklyTitle = styled.div`
 
 const WeeklyTime = styled.div`
   color: #6d86cb;
+`
+
+const AddTitle = styled.div`
+  font-size: 20px;
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  box-sizing: border-box;
+`
+
+const PutNickname = styled.input`
+  width: 96%;
+  padding: 3px 7px;
+  margin: 10px 0px;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+`
+
+const ModalContent = styled.div`
+  margin-top: 5px;
+  margin-bottom: 7px;
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+`
+
+const ModalContentLine = styled.div`
+  color: #5d5d5d;
+  margin-top: 5px;
+  font-size: 15px;
+`
+
+const ModalBtnContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+`
+
+const CancelBtn = styled.div`
+  padding: 5px 15px;
+  color: #969393;
+  cursor: pointer;
+`
+
+const DoneBtn = styled.div`
+  padding: 5px;
+  color: #6d86cb;
+  cursor: pointer;
 `
 
 export default MyPage

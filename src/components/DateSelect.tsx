@@ -4,6 +4,7 @@ import 'react-day-picker/style.css'
 import { format, isAfter, isSameDay } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import styled from '@emotion/styled'
+import { handleAdjustDate } from '../pages/Main'
 
 interface DateSelectProps {
   selectedDate: Date
@@ -19,7 +20,7 @@ const DateSelect: React.FC<DateSelectProps> = ({
   })
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false)
   const calendarRef = useRef<HTMLDivElement>(null)
-  const today = new Date()
+  const today = handleAdjustDate(new Date())
   const isToday = isSameDay(selectedDate, today)
 
   const handlePrev = () => {
@@ -74,6 +75,7 @@ const DateSelect: React.FC<DateSelectProps> = ({
             onSelect={handleDateSelect}
             locale={ko}
             disabled={(date) => isAfter(date, today)}
+            today={today}
           />
         </CalendarContainer>
       )}
