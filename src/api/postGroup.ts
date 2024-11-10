@@ -21,7 +21,7 @@ const postGroup = async ({
     teamDescription,
     maxParticipants,
     password,
-    tagIdList
+    tagIdList,
   })
   return response.data
 }

@@ -26,6 +26,7 @@ const TagFilter: React.FC<TagFilterProps> = ({
         setTags(fetchedTags)
         setLoading(false)
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.error('Failed to fetch tags:', err)
         setError(true)
         setLoading(false)
