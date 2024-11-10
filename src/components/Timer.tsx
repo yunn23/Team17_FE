@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import styled from '@emotion/styled'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Exercise } from './ExerciseList'
 import putStopExercise from '../api/putStopExercise'
 
@@ -27,8 +27,13 @@ const Timer: React.FC<TimerProps> = ({
   selectedDate,
   activeExerciseId,
 }) => {
+  const queryClient = useQueryClient()
+
   const stopExercise = useMutation({
     mutationFn: putStopExercise,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['main'] })
+    },
   })
 
   const [isActive, setIsActive] = useState(false)
