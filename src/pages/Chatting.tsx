@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState, useEffect, useRef } from 'react'
 import styled from '@emotion/styled'
 import { useParams, useNavigate } from 'react-router-dom'
