@@ -8,7 +8,9 @@ const Footer = () => {
   const navigate = useNavigate()
   const [isWarningOpen, setIsWarningOpen] = useState(false)
 
-  const isAnyActive = new URLSearchParams(location.search).has('activeExerciseId')
+  const isAnyActive = new URLSearchParams(location.search).has(
+    'activeExerciseId'
+  )
 
   useEffect(() => {
     if (isAnyActive) {
@@ -59,7 +61,7 @@ const Footer = () => {
             나의 그룹
           </NavText>
         </Link>
-        <Link to="/searchgroup" onClick={() => ('/searchgroup')}>
+        <Link to="/searchgroup" onClick={() => '/searchgroup'}>
           <NavIcon
             isActive={location.pathname === '/searchgroup'}
             className="material-symbols-outlined"
@@ -94,7 +96,8 @@ const Footer = () => {
       <Modal isOpen={isWarningOpen} onClose={handleWarningClose}>
         <ModalBody>
           <ModalBodyLine>
-            운동 진행중 페이지에서 벗어나 타이머에 오차가 발생할 수 있습니다. <span style={{ color: '#6d86cb' }}>운동을 종료해주세요</span>
+            운동 진행중 페이지에서 벗어나 타이머에 오차가 발생할 수 있습니다.{' '}
+            <span style={{ color: '#6d86cb' }}>운동을 종료해주세요</span>
           </ModalBodyLine>
         </ModalBody>
         <ModalBtnContainer>
@@ -141,7 +144,6 @@ const NavText = styled.div<{ isActive: boolean }>`
   font-size: 14px;
   color: ${(props) => (props.isActive ? '#7992EB' : '#4E4C4C')};
 `
-
 
 const ModalBtnContainer = styled.div`
   width: 100%;
