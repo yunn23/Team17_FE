@@ -215,7 +215,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   return (
     <ExerciseWrapper>
       <TitleContainer>
-        <Title>상세 운동 내역</Title>
+        <Title isToday={isToday}>상세 운동 내역</Title>
         {isToday && <AddButton onClick={handleAddClick}>+</AddButton>}
       </TitleContainer>
       <ListContainer>
@@ -309,9 +309,11 @@ const TitleContainer = styled.div`
   padding: 8px 5px;
 `
 
-const Title = styled.div`
+const Title = styled.div<{ isToday: boolean }>`
   font-size: 18px;
   font-weight: 500;
+  padding-top: ${({ isToday }) => (isToday ? '0' : '5px')};
+  padding-bottom: ${({ isToday }) => (isToday ? '0' : '5px')};
 `
 
 const AddButton = styled.div`
