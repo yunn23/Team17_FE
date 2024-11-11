@@ -177,6 +177,8 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const handleListMenuClick =
     (exerciseId: number) => (event: React.MouseEvent) => {
+      if (!isToday) return
+
       event?.stopPropagation()
 
       if (activeMenuId !== exerciseId) {
@@ -234,6 +236,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
               <RightContainer>
                 <ExerciseTime>{formatTime(exercise.exerciseTime)}</ExerciseTime>
                 <MenuIcon
+                  isToday={isToday}
                   className="material-symbols-outlined"
                   onClick={handleListMenuClick(exercise.exerciseId)}
                 >
@@ -365,11 +368,12 @@ const ExerciseTime = styled.div`
   font-size: 18px;
 `
 
-const MenuIcon = styled.div`
+const MenuIcon = styled.div<{ isToday: boolean }>`
   color: #828282;
   font-weight: 300;
   padding: 0 0 0 10px;
   cursor: pointer;
+  visibility: ${({ isToday }) => (isToday ? 'visible' : 'hidden')};
 `
 
 const MenuContainer = styled.div`
