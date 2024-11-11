@@ -66,6 +66,7 @@ const MyPage = () => {
 
   const handleExitSubmit = () => {
     setIsExitModalOpen(false)
+    window.localStorage.removeItem('authToken')
     deleteProfile.mutate()
   }
 
