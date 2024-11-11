@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
 import Sneaker from '../assets/sneaker.png'
 import Personal from '../assets/personal.png'
 import getMypage from '../api/getMypage'
@@ -13,6 +14,7 @@ import deleteMember from '../api/deleteMember'
 
 const MyPage = () => {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isExitModalOpen, setIsExitModalOpen] = useState(false)
   const [newName, setNewName] = useState('')
@@ -51,8 +53,12 @@ const MyPage = () => {
   // 회원 탈퇴 로직
   const deleteProfile = useMutation({
     mutationFn: deleteMember,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mypage'] })
+    onSuccess: (response) => {
+      if (response.status === 204) {
+        window.localStorage.removeItem('authToken')
+        setIsExitModalOpen(false)
+      }
+      navigate('/login')
     },
   })
 
@@ -66,7 +72,6 @@ const MyPage = () => {
 
   const handleExitSubmit = () => {
     setIsExitModalOpen(false)
-    window.localStorage.removeItem('authToken')
     deleteProfile.mutate()
   }
 
