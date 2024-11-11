@@ -177,6 +177,8 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const handleListMenuClick =
     (exerciseId: number) => (event: React.MouseEvent) => {
+      if (!isToday) return
+
       event?.stopPropagation()
 
       if (activeMenuId !== exerciseId) {
@@ -213,7 +215,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   return (
     <ExerciseWrapper>
       <TitleContainer>
-        <Title>상세 운동 내역</Title>
+        <Title isToday={isToday}>상세 운동 내역</Title>
         {isToday && <AddButton onClick={handleAddClick}>+</AddButton>}
       </TitleContainer>
       <ListContainer>
@@ -234,6 +236,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
               <RightContainer>
                 <ExerciseTime>{formatTime(exercise.exerciseTime)}</ExerciseTime>
                 <MenuIcon
+                  isToday={isToday}
                   className="material-symbols-outlined"
                   onClick={handleListMenuClick(exercise.exerciseId)}
                 >
@@ -306,9 +309,11 @@ const TitleContainer = styled.div`
   padding: 8px 5px;
 `
 
-const Title = styled.div`
+const Title = styled.div<{ isToday: boolean }>`
   font-size: 18px;
   font-weight: 500;
+  padding-top: ${({ isToday }) => (isToday ? '0' : '5px')};
+  padding-bottom: ${({ isToday }) => (isToday ? '0' : '5px')};
 `
 
 const AddButton = styled.div`
@@ -365,11 +370,12 @@ const ExerciseTime = styled.div`
   font-size: 18px;
 `
 
-const MenuIcon = styled.div`
+const MenuIcon = styled.div<{ isToday: boolean }>`
   color: #828282;
   font-weight: 300;
   padding: 0 0 0 10px;
   cursor: pointer;
+  visibility: ${({ isToday }) => (isToday ? 'visible' : 'hidden')};
 `
 
 const MenuContainer = styled.div`
