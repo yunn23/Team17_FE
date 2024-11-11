@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useIntersectionObserver } from 'usehooks-ts'
 import { isSameDay } from 'date-fns'
+import { useNavigate } from 'react-router'
 import Timer from '../components/Timer'
 import ExerciseList, { Exercise } from '../components/ExerciseList'
 import DiaryCreate from '../components/DiaryCreate'
@@ -11,7 +12,6 @@ import Error from '../components/Error'
 import Loading from '../components/Loading'
 import DateSelect from '../components/DateSelect'
 import getMain from '../api/getMain'
-import Modal from '../components/Modal'
 
 const resetHour = 3
 
@@ -32,10 +32,10 @@ export const getCustomDate = (date: Date) => {
 }
 
 const Main = () => {
+  const navigate = useNavigate()
   const newDate = new Date()
   const [selectedDate, setSelectedDate] = useState(handleAdjustDate(newDate))
   const formattedDate = getCustomDate(selectedDate)
-  const [isWarningOpen, setIsWarningOpen] = useState(false)
 
   const today = handleAdjustDate(new Date())
   // eslint-disable-next-line spaced-comment
@@ -82,7 +82,8 @@ const Main = () => {
     diaryData?.pages.flatMap((page) => page.diaries.content || [])
   )
 
-  const isAnyActive = exerciseList?.some((exercise) => exercise.isActive)
+  const activeExercise = exerciseList?.find((exercise) => exercise.isActive)
+  const isAnyActive = !!activeExercise
 
   useEffect(() => {
     if (data) {
@@ -99,9 +100,6 @@ const Main = () => {
   }, [data, diaryData?.pages])
 
   useEffect(() => {
-    const activeExercise = exerciseList.find(
-      (exercise: Exercise) => exercise.isActive
-    )
     if (activeExercise && activeExercise.startTime) {
       const elapsedTime =
         Date.now() - new Date(activeExercise.startTime).getTime()
@@ -109,13 +107,18 @@ const Main = () => {
         prevTime !== undefined ? prevTime + elapsedTime : elapsedTime
       )
     }
-  }, [exerciseList])
+  }, [activeExercise, exerciseList])
 
-  const activeExercise = exerciseList.find((exercise) => exercise.isActive)
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search)
+    if (isAnyActive && activeExercise) {
+      queryParams.set('activeExerciseId', activeExercise.exerciseId.toString())
+    } else {
+      queryParams.delete('activeExerciseId')
+    }
 
-  const handleWarningClose = () => {
-    setIsWarningOpen(false)
-  }
+    navigate(`?${queryParams.toString()}`, { replace: true })
+  }, [isAnyActive, activeExercise, navigate])
 
   if (isLoading || isDiaryLoading) return <Loading />
   if (isError || isDiaryError) return <Error name="메인화면" />
@@ -151,17 +154,6 @@ const Main = () => {
       <Container>
         <TodayDiary diaryData={diary || []} />
       </Container>
-      <Modal isOpen={isWarningOpen} onClose={handleWarningClose}>
-        <ModalBody>
-          <ModalBodyLine>
-            {' '}
-            운동이 진행중입니다. 운동을 종료해주세요
-          </ModalBodyLine>
-        </ModalBody>
-        <ModalBtnContainer>
-          <DoneBtn onClick={handleWarningClose}>확인</DoneBtn>
-        </ModalBtnContainer>
-      </Modal>
       <div ref={ref} />
     </MainWrapper>
   )
@@ -194,33 +186,6 @@ const Container = styled.div`
   padding: 10px 20px;
   border-radius: 10px;
   margin: 20px 0px;
-`
-
-const ModalBtnContainer = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
-`
-
-const DoneBtn = styled.div`
-  padding: 5px;
-  color: #6d86cb;
-  cursor: pointer;
-`
-
-const ModalBody = styled.div`
-  margin-top: 5px;
-  margin-bottom: 7px;
-  margin-right: 50px;
-  display: flex;
-  flex-direction: column;
-`
-
-const ModalBodyLine = styled.div`
-  color: #5d5d5d;
-  margin-top: 5px;
-  font-size: 15px;
 `
 
 export default Main
