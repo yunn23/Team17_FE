@@ -80,7 +80,7 @@ const Ranking = () => {
         </EntireRank>
       </RankContainer>
       <MyRank>
-        {rankData?.myRanking && (
+        {rankData?.myRanking !== null && rankData?.myRanking !== undefined && (
           <MyRankElement ranking={rankData.myRanking}>
             <MyRankerCount ranking={rankData.myRanking}>
               {rankData.myRanking}
