@@ -40,6 +40,7 @@ const NoGroupsMessage = styled.div`
   margin-top: 40px;
   padding: 100px;
   text-align: center;
+  color : #8e8e8e;
 `
 
 export default GroupListContainer

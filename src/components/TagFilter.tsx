@@ -17,20 +17,13 @@ const TagFilter: React.FC<TagFilterProps> = ({
 }) => {
   const [tags, setTags] = useState<Tag[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+  const [error] = useState(false)
 
   useEffect(() => {
     const fetchTags = async () => {
-      try {
         const fetchedTags = await getTags()
         setTags(fetchedTags)
         setLoading(false)
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('Failed to fetch tags:', err)
-        setError(true)
-        setLoading(false)
-      }
     }
 
     fetchTags()
