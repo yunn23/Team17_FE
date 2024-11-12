@@ -112,6 +112,27 @@ const MyPage = () => {
           <WeeklyTime>{formatTime(data?.weeklyTotal ?? 0)}</WeeklyTime>
         </WeeklyStatic>
       </StaticWrapper>
+      <NoticeWrapper>
+        <NoticeTitleContainer>
+          <NoticeIcon className="material-symbols-outlined">info</NoticeIcon>
+          <NoticeTitle>도움말</NoticeTitle>
+        </NoticeTitleContainer>
+        <NoticeContent>
+          <NoticeLine>* 새벽 3시에 날짜와 시간이 초기화 됩니다.</NoticeLine>
+          <NoticeLine>
+            * 한번에 8시간 이상 운동이 지속되면 부정한 방식의 측정으로 간주되어
+            시간이 집계되지 않습니다.
+          </NoticeLine>
+          <NoticeLine>
+            * 하루의 총 운동시간이 12시간을 초과하면 이후의 운동은 집계되지
+            않습니다.
+          </NoticeLine>
+          <NoticeLine>
+            * 운동 진행 중 화면을 벗어나더라도 사용자가 직접 종료하기 버튼을
+            누르기 전까진 측정이 지속됩니다.
+          </NoticeLine>
+        </NoticeContent>
+      </NoticeWrapper>
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         <AddTitle>닉네임 변경</AddTitle>
         <PutNickname
@@ -294,6 +315,48 @@ const PutNickname = styled.input`
   box-sizing: border-box;
   border: none;
   outline: none;
+`
+
+const NoticeWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 25px;
+`
+
+const NoticeTitleContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: #6d86cb;
+`
+
+const NoticeIcon = styled.div`
+  font-size: 22px;
+  background-color: #ffffff;
+  z-index: 2;
+  margin-left: 10px;
+  padding-left: 5px;
+  padding-right: 10px;
+`
+
+const NoticeTitle = styled.div`
+  font-wieght: 500;
+  background-color: #ffffff;
+  z-index: 2;
+  padding-right: 10px;
+`
+
+const NoticeContent = styled.div`
+  border-radius: 10px;
+  border: 1px solid #b5c3e9;
+  margin-top: -10px;
+  padding: 15px 15px 15px 20px;
+`
+
+const NoticeLine = styled.div`
+  font-size: 14px;
+  color: #8e8e8e;
+  margin-top: 6px;
 `
 
 const ModalContent = styled.div`
