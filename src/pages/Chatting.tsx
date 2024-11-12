@@ -122,15 +122,15 @@ const Chatting = () => {
   }
 
   const renderMessages = (message: ChatMessage[]) => {
-    let lastDate: string | null = null;
-  
-    return message.map((msg) => {
-      const messageDate = new Date(msg.chattedAt).toLocaleDateString();
-      const isNewDate = lastDate !== messageDate;
-      lastDate = messageDate;
+    let lastDate: string | null = null
 
-      const isOwnMessage = `${msg.nickName}#${msg.memberId}` === currentUser;
-  
+    return message.map((msg) => {
+      const messageDate = new Date(msg.chattedAt).toLocaleDateString()
+      const isNewDate = lastDate !== messageDate
+      lastDate = messageDate
+
+      const isOwnMessage = `${msg.nickName}#${msg.memberId}` === currentUser
+
       return (
         <Box key={msg.chatId}>
           {isNewDate && (
@@ -139,7 +139,9 @@ const Chatting = () => {
             </DateSeparator>
           )}
           <MessageContainer isOwn={isOwnMessage}>
-          <MessageInfo isOwn={isOwnMessage}>{`${msg.nickName}#${msg.memberId}`}</MessageInfo>
+            <MessageInfo
+              isOwn={isOwnMessage}
+            >{`${msg.nickName}#${msg.memberId}`}</MessageInfo>
             <MessageContentContainer isOwn={isOwnMessage}>
               <MessageBubble isOwn={isOwnMessage}>{msg.message}</MessageBubble>
               <TimeStamp isOwn={isOwnMessage}>
@@ -151,9 +153,9 @@ const Chatting = () => {
             </MessageContentContainer>
           </MessageContainer>
         </Box>
-      );
-    });
-  };
+      )
+    })
+  }
 
   return (
     <PageWrapper>
@@ -246,7 +248,7 @@ const MessageBox = styled.div`
   overflow-y: auto;
 `
 const Box = styled.div`
-  display : flex;
+  display: flex;
   flex-direction: column;
 `
 
@@ -304,7 +306,7 @@ const DateSeparator = styled.div`
     padding: 5px 10px;
     border-radius: 15px;
   }
-`;
+`
 
 /* Input bar */
 const InputContainer = styled.div`

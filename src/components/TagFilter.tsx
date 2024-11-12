@@ -21,9 +21,9 @@ const TagFilter: React.FC<TagFilterProps> = ({
 
   useEffect(() => {
     const fetchTags = async () => {
-        const fetchedTags = await getTags()
-        setTags(fetchedTags)
-        setLoading(false)
+      const fetchedTags = await getTags()
+      setTags(fetchedTags)
+      setLoading(false)
     }
 
     fetchTags()

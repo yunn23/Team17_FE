@@ -1,7 +1,7 @@
 import axiosInstance from './axiosInstance'
 
 interface MypageResponse {
-  id : number
+  id: number
   nickname: string
   email: string
   attendance: number

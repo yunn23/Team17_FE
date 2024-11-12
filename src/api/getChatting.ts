@@ -4,7 +4,7 @@ export interface ChatMessage {
   chatId: number
   memberId: number
   nickName: string
-  chattedAt : Date
+  chattedAt: Date
   message: string
 }
 

@@ -104,7 +104,7 @@ const AddGroup = () => {
         navigate('/searchgroup')
       })
       .catch((error) => {
-        if (error.response && error.response.data.errorCode === "Team400_004") {
+        if (error.response && error.response.data.errorCode === 'Team400_004') {
           setModalMessage('해당 그룹 이름은 이미 존재하는 그룹 이름입니다.')
         } else {
           setModalMessage('그룹 생성에 실패했습니다. 다시 시도해주세요.')
