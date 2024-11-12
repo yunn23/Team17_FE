@@ -26,6 +26,7 @@ const DiaryCreate = () => {
 
   const [newDiary, setNewDiary] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('올바른 값을 입력해주세요.')
 
   const mutationDiary = useMutation<string, Error, string>({
     mutationFn: postDiary,
@@ -37,7 +38,12 @@ const DiaryCreate = () => {
 
   const onSubmit = () => {
     if (newDiary.trim() === '') {
-      setIsModalOpen(true)
+      handleOpenAlert('일기 텍스트가 비어있습니다\n일기를 작성해주세요!')
+      setNewDiary('')
+      return
+    }
+    if (newDiary.length > 500) {
+      handleOpenAlert('일기는 최대 500자까지 작성 가능합니다.')
       return
     }
     mutationDiary.mutate(newDiary)
@@ -45,6 +51,11 @@ const DiaryCreate = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
+  }
+
+  const handleOpenAlert = (message = '올바른 값을 입력해주세요.') => {
+    setAlertMessage(message)
+    setIsModalOpen(true)
   }
 
   return (
@@ -60,8 +71,7 @@ const DiaryCreate = () => {
       />
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         <ModalText>
-          <AlertText>일기 텍스트가 비어있습니다</AlertText>
-          <AlertText>일기를 작성해주세요!</AlertText>
+          <AlertText>{alertMessage}</AlertText>
         </ModalText>
         <ModalBtnContainer>
           <DoneBtn onClick={handleCloseModal}>확인</DoneBtn>
@@ -113,6 +123,8 @@ const AlertText = styled.div`
   color: #4a4a4a;
   text-align: center;
   margin-top: 5px;
+  white-space: pre-line;
+  line-height: 1.5;
 `
 
 const ModalBtnContainer = styled.div`
