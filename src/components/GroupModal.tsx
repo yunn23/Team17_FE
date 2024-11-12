@@ -88,8 +88,8 @@ const GroupModal: React.FC<GroupModalProps> = ({
       case 'max':
         return (
           <Modal isOpen onClose={onClose}>
-            <ModalTitle>그룹 가입</ModalTitle>
-            <ModalText>정원이 모두 찼습니다.</ModalText>
+            <ModalTitle>그룹 인원 초과</ModalTitle>
+            <ModalText>그룹에 가입할 수 없습니다.</ModalText>
             <ModalBtnContainer>
               <CancelBtn onClick={onClose}>확인</CancelBtn>
             </ModalBtnContainer>

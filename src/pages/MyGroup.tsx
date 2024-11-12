@@ -104,7 +104,7 @@ const MyGroup = () => {
   }
 
   const handleMenuClick = (group: MyTeam) => {
-    navigate(`/ranking/${group.id}`)
+    navigate(`/ranking/${group.id}`, { state: { teamName: group.teamName } })
   }
 
   const handleAction = async () => {
@@ -276,6 +276,7 @@ const NoGroupsMessage = styled.div`
   margin-bottom: 150px;
   padding: 100px 0;
   text-align: center;
+  color: #8e8e8e;
 `
 
 const LoadingContainer = styled.div`
