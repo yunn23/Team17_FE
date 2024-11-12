@@ -1,7 +1,7 @@
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
 // import { DateTime } from 'luxon'
-import { useParams } from 'react-router'
+import { useLocation, useParams } from 'react-router'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import DateSelect from '../components/DateSelect'
@@ -12,6 +12,8 @@ import Error from '../components/Error'
 import { formatTime } from '../components/Timer'
 
 const Ranking = () => {
+  const location = useLocation()
+  const teamName = location.state?.teamName
   const { groupId } = useParams()
   const [selectedDate, setSelectedDate] = useState(new Date())
   const resetHour = 3
@@ -59,7 +61,7 @@ const Ranking = () => {
         <Link to="/mygroup">
           <BeforeButton>&lt;</BeforeButton>
         </Link>
-        <Title>매일 운동 도전</Title>
+        <Title>{teamName}</Title>
         <Space></Space>
       </TitleContainer>
       <RankContainer>
@@ -70,9 +72,9 @@ const Ranking = () => {
           />
         </DateContainer>
         <EntireRank>
-          {rankData?.slice?.content?.map((ranker, index) => (
-            <RankElement key={ranker.name} index={index}>
-              <RankerCount index={index}>{index + 1}</RankerCount>
+          {rankData?.slice?.content?.map((ranker) => (
+            <RankElement rank={ranker.ranking} key={ranker.name}>
+              <RankerCount rank={ranker.ranking}>{ranker.ranking}</RankerCount>
               <RankerName>{ranker.name}</RankerName>
               <RankerTime>{formatTime(ranker.totalExerciseTime)}</RankerTime>
             </RankElement>
@@ -90,7 +92,7 @@ const Ranking = () => {
           </MyRankElement>
         )}
       </MyRank>
-      <Link to={`/chat/${groupId}`}>
+      <Link to={`/chat/${groupId}`} state={{ teamName }}>
         <ChatButton>
           <ChatIcon src={chatbubble} alt="chat icon" />
         </ChatButton>
@@ -179,7 +181,7 @@ const MyRankerCount = styled.div<{ ranking: number }>`
 `
 
 interface RankElementProps {
-  index: number
+  rank: number
 }
 
 const RankElement = styled.div<RankElementProps>`
@@ -188,11 +190,10 @@ const RankElement = styled.div<RankElementProps>`
   border-top: 1px solid #b5c3e9;
   align-items: center;
   background: ${(props) => {
-    if (props.index === 0)
-      return 'linear-gradient(90deg, #FFF 0%, #FFC329 100%)'
-    if (props.index === 1)
+    if (props.rank === 1) return 'linear-gradient(90deg, #FFF 0%, #FFC329 100%)'
+    if (props.rank === 2)
       return 'linear-gradient(90deg, rgba(255, 255, 255, 0.30) 0%, rgba(0, 0, 0, 0.23) 100%)'
-    if (props.index === 2)
+    if (props.rank === 3)
       return 'linear-gradient(90deg, rgba(255, 255, 255, 0.30) 0%, rgba(255, 170, 70, 0.30) 100%)'
     return ''
   }};
@@ -204,9 +205,9 @@ const RankerCount = styled.div<RankElementProps>`
   font-size: 20px;
   font-weight: 500;
   color: ${(props) => {
-    if (props.index === 0) return '#D7C100'
-    if (props.index === 1) return '#989898'
-    if (props.index === 2) return '#B46100'
+    if (props.rank === 1) return '#D7C100'
+    if (props.rank === 2) return '#989898'
+    if (props.rank === 3) return '#B46100'
     return ''
   }};
 `
