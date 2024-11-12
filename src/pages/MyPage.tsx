@@ -16,6 +16,8 @@ const MyPage = () => {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('올바른 값을 입력해주세요.')
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false)
   const [isExitModalOpen, setIsExitModalOpen] = useState(false)
   const [newName, setNewName] = useState('')
 
@@ -46,6 +48,15 @@ const MyPage = () => {
   }
 
   const handleNameSubmit = () => {
+    if (newName.trim() === '') {
+      handleOpenAlert()
+      setNewName('')
+      return
+    }
+    if (newName.length > 32) {
+      handleOpenAlert('닉네임은 최대 32자까지 가능합니다.')
+      return
+    }
     setIsModalOpen(false)
     changeNickname.mutate(newName)
   }
@@ -73,6 +84,15 @@ const MyPage = () => {
   const handleExitSubmit = () => {
     setIsExitModalOpen(false)
     deleteProfile.mutate()
+  }
+
+  const handleOpenAlert = (message = '올바른 값을 입력해주세요.') => {
+    setAlertMessage(message)
+    setIsAlertModalOpen(true)
+  }
+
+  const handleCancelAlert = () => {
+    setIsAlertModalOpen(false)
   }
 
   if (isLoading) return <Loading />
@@ -156,6 +176,14 @@ const MyPage = () => {
         <ModalBtnContainer>
           <CancelBtn onClick={handleCloseExitModal}>취소</CancelBtn>
           <DoneBtn onClick={handleExitSubmit}>탈퇴</DoneBtn>
+        </ModalBtnContainer>
+      </Modal>
+      <Modal isOpen={isAlertModalOpen} onClose={handleCancelAlert}>
+        <ModalText>
+          <AlertText>{alertMessage}</AlertText>
+        </ModalText>
+        <ModalBtnContainer>
+          <DoneBtn onClick={handleCancelAlert}>확인</DoneBtn>
         </ModalBtnContainer>
       </Modal>
     </MypageWrapper>
@@ -390,6 +418,19 @@ const DoneBtn = styled.div`
   padding: 5px;
   color: #6d86cb;
   cursor: pointer;
+`
+
+const ModalText = styled.div`
+  margin-bottom: 20px;
+  margin-top: 25px;
+`
+
+const AlertText = styled.div`
+  color: #4a4a4a;
+  text-align: center;
+  margin-top: 5px;
+  white-space: pre-line;
+  line-height: 1.5;
 `
 
 export default MyPage
