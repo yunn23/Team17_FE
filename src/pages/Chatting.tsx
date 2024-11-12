@@ -1,9 +1,8 @@
-/* eslint-disable no-console */
 import { useState, useEffect, useRef } from 'react'
 import styled from '@emotion/styled'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Client, IMessage, Frame } from '@stomp/stompjs'
+import { Client, IMessage } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 import { fetchInitialMessages, ChatMessage } from '../api/getChatting'
 import getMypage from '../api/getMypage'
@@ -31,6 +30,8 @@ const Chatting = () => {
   const stompClient = useRef<Client | null>(null)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const navigate = useNavigate()
+  const location = useLocation()
+  const teamName = location.state?.teamName
 
   const {
     data: messages,
@@ -53,7 +54,7 @@ const Chatting = () => {
     retry: 1,
   })
 
-  const currentUser = userData?.nickname
+  const currentUser = `${userData?.nickname}#${userData?.id}`
 
   const handlePrev = () => {
     navigate(-1)
@@ -63,10 +64,9 @@ const Chatting = () => {
     const connectWebSocket = () => {
       const token = localStorage.getItem('authToken')
       if (!token) {
-        console.error('Authentication token not found')
         return
       }
-      const socketUrl = `http://13.125.102.156:8080/api/team/chatting/websocket?access_token=${token}`
+      const socketUrl = `https://13.125.102.156:8080/api/team/chatting/websocket?access_token=${token}`
       const socket = new SockJS(socketUrl)
 
       stompClient.current = new Client({
@@ -75,8 +75,7 @@ const Chatting = () => {
         connectHeaders: {
           Authorization: `Bearer ${token}`,
         },
-        onConnect: (frame: Frame) => {
-          console.log('Connected:', frame)
+        onConnect: () => {
           stompClient.current?.subscribe(
             `/sub/${groupId}`,
             (message: IMessage) => {
@@ -87,19 +86,6 @@ const Chatting = () => {
               )
             }
           )
-        },
-        onStompError: (frame: Frame) => {
-          console.error('STOMP Error:', frame.headers.message)
-          alert(`Connection error: ${frame.headers.message}`)
-        },
-        onWebSocketClose: (evt) => {
-          console.error('WebSocket closed:', evt)
-          if (evt.code === 1006) {
-            console.log('Reconnecting...')
-          }
-        },
-        onWebSocketError: (evt) => {
-          console.error('WebSocket error:', evt)
         },
       })
       stompClient.current.activate()
@@ -123,6 +109,7 @@ const Chatting = () => {
     const messagePayload = {
       nickname: currentUser || 'Unknown User',
       message: inputMessage,
+      chattedAt: new Date().toISOString(),
     }
 
     stompClient.current.publish({
@@ -134,37 +121,51 @@ const Chatting = () => {
     setInputMessage('')
   }
 
+  const renderMessages = (message: ChatMessage[]) => {
+    let lastDate: string | null = null
+
+    return message.map((msg) => {
+      const messageDate = new Date(msg.chattedAt).toLocaleDateString()
+      const isNewDate = lastDate !== messageDate
+      lastDate = messageDate
+
+      const isOwnMessage = `${msg.nickName}#${msg.memberId}` === currentUser
+
+      return (
+        <Box key={msg.chatId}>
+          {isNewDate && (
+            <DateSeparator>
+              <span>{messageDate}</span>
+            </DateSeparator>
+          )}
+          <MessageContainer isOwn={isOwnMessage}>
+            <MessageInfo
+              isOwn={isOwnMessage}
+            >{`${msg.nickName}#${msg.memberId}`}</MessageInfo>
+            <MessageContentContainer isOwn={isOwnMessage}>
+              <MessageBubble isOwn={isOwnMessage}>{msg.message}</MessageBubble>
+              <TimeStamp isOwn={isOwnMessage}>
+                {new Date(msg.chattedAt).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </TimeStamp>
+            </MessageContentContainer>
+          </MessageContainer>
+        </Box>
+      )
+    })
+  }
+
   return (
     <PageWrapper>
       <PageContainer>
         <HeaderContainer>
           <Prev onClick={handlePrev}>{'<'}</Prev>
-          <PageTitle>매일 운동 도전</PageTitle>
+          <PageTitle>{teamName}</PageTitle>
         </HeaderContainer>
         <MessageBox>
-          {messages &&
-            Array.isArray(messages) &&
-            messages.map((msg: ChatMessage) => (
-              <MessageContainer
-                key={msg.chatId}
-                isOwn={msg.nickName === currentUser}
-              >
-                <MessageInfo isOwn={msg.nickName === currentUser}>
-                  {msg.nickName}
-                </MessageInfo>
-                <MessageContentContainer isOwn={msg.nickName === currentUser}>
-                  <MessageBubble isOwn={msg.nickName === currentUser}>
-                    {msg.message}
-                  </MessageBubble>
-                  <TimeStamp isOwn={msg.nickName === currentUser}>
-                    {new Date().toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </TimeStamp>
-                </MessageContentContainer>
-              </MessageContainer>
-            ))}
+          {messages && renderMessages(messages)}
           <div ref={messagesEndRef} />
         </MessageBox>
       </PageContainer>
@@ -246,6 +247,10 @@ const MessageBox = styled.div`
   flex-direction: column;
   overflow-y: auto;
 `
+const Box = styled.div`
+  display: flex;
+  flex-direction: column;
+`
 
 const MessageContainer = styled.div<MessageProps>`
   display: flex;
@@ -287,6 +292,20 @@ const TimeStamp = styled.span<MessageProps>`
   font-size: 9px;
   color: #4a4a4a;
   align-self: ${(props) => (props.isOwn ? 'flex-end' : 'flex-start')};
+`
+
+const DateSeparator = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+  color: #999;
+  font-size: 12px;
+  & > span {
+    background-color: #f1f1f1;
+    padding: 5px 10px;
+    border-radius: 15px;
+  }
 `
 
 /* Input bar */

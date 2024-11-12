@@ -57,6 +57,11 @@ const AddGroup = () => {
       setModalOpen(true)
       return
     }
+    if (inputs.teamname && inputs.teamname.length > 16) {
+      setModalMessage('그룹이름을 15자 이하로 작성해주세요')
+      setModalOpen(true)
+      return
+    }
     if (!inputs.participant || Number.isNaN(Number(inputs.participant))) {
       setModalMessage('모집인원을 올바르게 입력해주세요.')
       setModalOpen(true)
@@ -64,6 +69,11 @@ const AddGroup = () => {
     }
     if (inputs.participant && Number(inputs.participant) > 30) {
       setModalMessage('모집인원은 30명 이하로 작성해주세요.')
+      setModalOpen(true)
+      return
+    }
+    if (inputs.participant && Number(inputs.participant) < 1) {
+      setModalMessage('모집인원은 1명 이상으로 작성해주세요.')
       setModalOpen(true)
       return
     }
@@ -94,7 +104,7 @@ const AddGroup = () => {
         navigate('/searchgroup')
       })
       .catch((error) => {
-        if (error.response && error.response.status === 409) {
+        if (error.response && error.response.data.errorCode === 'Team400_004') {
           setModalMessage('해당 그룹 이름은 이미 존재하는 그룹 이름입니다.')
         } else {
           setModalMessage('그룹 생성에 실패했습니다. 다시 시도해주세요.')

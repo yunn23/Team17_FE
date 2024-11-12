@@ -36,6 +36,8 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [exerciseNew, setExerciseNew] = useState('')
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('올바른 값을 입력해주세요.')
   const [deletedExerciseId, setDeletedExerciseId] = useState<number | null>(
     null
   )
@@ -207,9 +209,28 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
   }
 
   const handleExerciseSubmit = async () => {
+    if (!exerciseNew.trim()) {
+      handleOpenAlert()
+      setExerciseNew('')
+      return
+    }
+    if (exerciseNew.length > 20) {
+      handleOpenAlert('운동 이름은 30자 이하로 입력해주세요')
+      setExerciseNew('')
+      return
+    }
     await addExercise.mutateAsync(exerciseNew)
     setIsModalOpen(false)
     setExerciseNew('')
+  }
+
+  const handleOpenAlert = (message = '올바른 값을 입력해주세요.') => {
+    setAlertMessage(message)
+    setIsAlertModalOpen(true)
+  }
+
+  const handleCancelAlert = () => {
+    setIsAlertModalOpen(false)
   }
 
   return (
@@ -289,6 +310,15 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
         <ModalBtnContainer>
           <CancelBtn onClick={handleCancelDelete}>취소</CancelBtn>
           <DoneBtn onClick={handleConfirmDelete}>삭제</DoneBtn>
+        </ModalBtnContainer>
+      </Modal>
+      <Modal isOpen={isAlertModalOpen} onClose={handleCancelAlert}>
+        <AddTitle>운동이름 오류</AddTitle>
+        <ModalBody>
+          <ModalBodyLine>{alertMessage}</ModalBodyLine>
+        </ModalBody>
+        <ModalBtnContainer>
+          <DoneBtn onClick={handleCancelAlert}>확인</DoneBtn>
         </ModalBtnContainer>
       </Modal>
     </ExerciseWrapper>

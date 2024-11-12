@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
 import Sneaker from '../assets/sneaker.png'
 import Personal from '../assets/personal.png'
 import getMypage from '../api/getMypage'
@@ -13,7 +14,10 @@ import deleteMember from '../api/deleteMember'
 
 const MyPage = () => {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('올바른 값을 입력해주세요.')
+  const [isAlertModalOpen, setIsAlertModalOpen] = useState(false)
   const [isExitModalOpen, setIsExitModalOpen] = useState(false)
   const [newName, setNewName] = useState('')
 
@@ -44,6 +48,15 @@ const MyPage = () => {
   }
 
   const handleNameSubmit = () => {
+    if (newName.trim() === '') {
+      handleOpenAlert()
+      setNewName('')
+      return
+    }
+    if (newName.length > 32) {
+      handleOpenAlert('닉네임은 최대 32자까지 가능합니다.')
+      return
+    }
     setIsModalOpen(false)
     changeNickname.mutate(newName)
   }
@@ -51,8 +64,12 @@ const MyPage = () => {
   // 회원 탈퇴 로직
   const deleteProfile = useMutation({
     mutationFn: deleteMember,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mypage'] })
+    onSuccess: (response) => {
+      if (response.status === 204) {
+        window.localStorage.removeItem('authToken')
+        setIsExitModalOpen(false)
+      }
+      navigate('/login')
     },
   })
 
@@ -66,8 +83,16 @@ const MyPage = () => {
 
   const handleExitSubmit = () => {
     setIsExitModalOpen(false)
-    window.localStorage.removeItem('authToken')
     deleteProfile.mutate()
+  }
+
+  const handleOpenAlert = (message = '올바른 값을 입력해주세요.') => {
+    setAlertMessage(message)
+    setIsAlertModalOpen(true)
+  }
+
+  const handleCancelAlert = () => {
+    setIsAlertModalOpen(false)
   }
 
   if (isLoading) return <Loading />
@@ -107,6 +132,27 @@ const MyPage = () => {
           <WeeklyTime>{formatTime(data?.weeklyTotal ?? 0)}</WeeklyTime>
         </WeeklyStatic>
       </StaticWrapper>
+      <NoticeWrapper>
+        <NoticeTitleContainer>
+          <NoticeIcon className="material-symbols-outlined">info</NoticeIcon>
+          <NoticeTitle>도움말</NoticeTitle>
+        </NoticeTitleContainer>
+        <NoticeContent>
+          <NoticeLine>* 새벽 3시에 날짜와 시간이 초기화 됩니다.</NoticeLine>
+          <NoticeLine>
+            * 한번에 8시간 이상 운동이 지속되면 부정한 방식의 측정으로 간주되어
+            시간이 집계되지 않습니다.
+          </NoticeLine>
+          <NoticeLine>
+            * 하루의 총 운동시간이 12시간을 초과하면 이후의 운동은 집계되지
+            않습니다.
+          </NoticeLine>
+          <NoticeLine>
+            * 운동 진행 중 화면을 벗어나더라도 사용자가 직접 종료하기 버튼을
+            누르기 전까진 측정이 지속됩니다.
+          </NoticeLine>
+        </NoticeContent>
+      </NoticeWrapper>
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
         <AddTitle>닉네임 변경</AddTitle>
         <PutNickname
@@ -130,6 +176,14 @@ const MyPage = () => {
         <ModalBtnContainer>
           <CancelBtn onClick={handleCloseExitModal}>취소</CancelBtn>
           <DoneBtn onClick={handleExitSubmit}>탈퇴</DoneBtn>
+        </ModalBtnContainer>
+      </Modal>
+      <Modal isOpen={isAlertModalOpen} onClose={handleCancelAlert}>
+        <ModalText>
+          <AlertText>{alertMessage}</AlertText>
+        </ModalText>
+        <ModalBtnContainer>
+          <DoneBtn onClick={handleCancelAlert}>확인</DoneBtn>
         </ModalBtnContainer>
       </Modal>
     </MypageWrapper>
@@ -291,6 +345,48 @@ const PutNickname = styled.input`
   outline: none;
 `
 
+const NoticeWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 25px;
+`
+
+const NoticeTitleContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: #6d86cb;
+`
+
+const NoticeIcon = styled.div`
+  font-size: 22px;
+  background-color: #ffffff;
+  z-index: 2;
+  margin-left: 10px;
+  padding-left: 5px;
+  padding-right: 10px;
+`
+
+const NoticeTitle = styled.div`
+  font-wieght: 500;
+  background-color: #ffffff;
+  z-index: 2;
+  padding-right: 10px;
+`
+
+const NoticeContent = styled.div`
+  border-radius: 10px;
+  border: 1px solid #b5c3e9;
+  margin-top: -10px;
+  padding: 15px 15px 15px 20px;
+`
+
+const NoticeLine = styled.div`
+  font-size: 14px;
+  color: #8e8e8e;
+  margin-top: 6px;
+`
+
 const ModalContent = styled.div`
   margin-top: 5px;
   margin-bottom: 7px;
@@ -322,6 +418,19 @@ const DoneBtn = styled.div`
   padding: 5px;
   color: #6d86cb;
   cursor: pointer;
+`
+
+const ModalText = styled.div`
+  margin-bottom: 20px;
+  margin-top: 25px;
+`
+
+const AlertText = styled.div`
+  color: #4a4a4a;
+  text-align: center;
+  margin-top: 5px;
+  white-space: pre-line;
+  line-height: 1.5;
 `
 
 export default MyPage
