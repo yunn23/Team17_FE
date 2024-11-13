@@ -72,8 +72,17 @@ const Ranking = () => {
         </DateContainer>
         <EntireRank>
           {rankData?.slice?.content?.map((ranker) => (
-            <RankElement rank={ranker.ranking} key={ranker.name}>
-              <RankerCount rank={ranker.ranking}>{ranker.ranking}</RankerCount>
+            <RankElement
+              rank={ranker.ranking}
+              time={ranker.totalExerciseTime}
+              key={ranker.name}
+            >
+              <RankerCount
+                rank={ranker.ranking}
+                time={ranker.totalExerciseTime}
+              >
+                {ranker.totalExerciseTime === 0 ? '-' : ranker.ranking}
+              </RankerCount>
               <RankerName>{ranker.name}</RankerName>
               <RankerTime>{formatTime(ranker.totalExerciseTime)}</RankerTime>
             </RankElement>
@@ -82,9 +91,15 @@ const Ranking = () => {
       </RankContainer>
       <MyRank>
         {rankData?.myRanking !== null && rankData?.myRanking !== undefined && (
-          <MyRankElement ranking={rankData.myRanking}>
-            <MyRankerCount ranking={rankData.myRanking}>
-              {rankData.myRanking}
+          <MyRankElement
+            rank={rankData.myRanking}
+            time={rankData.myExerciseTime}
+          >
+            <MyRankerCount
+              rank={rankData.myRanking}
+              time={rankData.myExerciseTime}
+            >
+              {rankData.myExerciseTime === 0 ? '-' : rankData.myRanking}
             </MyRankerCount>
             <RankerName>{rankData.myNickname}</RankerName>
             <RankerTime>{formatTime(rankData.myExerciseTime)}</RankerTime>
@@ -150,38 +165,43 @@ const MyRank = styled.div`
   margin-top: 20px;
 `
 
-const MyRankElement = styled.div<{ ranking: number }>`
+interface RankElementProps {
+  rank: number
+  time: number
+}
+
+const MyRankElement = styled.div<RankElementProps>`
   display: flex;
   font-size: 18px;
   padding: 10px 20px;
   border: 1px solid #b5c3e9;
   border-radius: 10px;
   background: ${(props) => {
-    if (props.ranking === 1)
-      return 'linear-gradient(90deg, #FFF 0%, #FFC329 100%)'
-    if (props.ranking === 2)
-      return 'linear-gradient(90deg, rgba(255, 255, 255, 0.30) 0%, rgba(0, 0, 0, 0.23) 100%)'
-    if (props.ranking === 3)
-      return 'linear-gradient(90deg, rgba(255, 255, 255, 0.30) 0%, rgba(255, 170, 70, 0.30) 100%)'
+    if (props.time !== 0) {
+      if (props.rank === 1)
+        return 'linear-gradient(90deg, #FFF 0%, #FFC329 100%)'
+      if (props.rank === 2)
+        return 'linear-gradient(90deg, rgba(255, 255, 255, 0.30) 0%, rgba(0, 0, 0, 0.23) 100%)'
+      if (props.rank === 3)
+        return 'linear-gradient(90deg, rgba(255, 255, 255, 0.30) 0%, rgba(255, 170, 70, 0.30) 100%)'
+    }
     return ''
   }};
 `
 
-const MyRankerCount = styled.div<{ ranking: number }>`
+const MyRankerCount = styled.div<RankElementProps>`
   padding: 10px;
   margin-left: 5px;
   font-weight: 500;
   color: ${(props) => {
-    if (props.ranking === 1) return '#D7C100'
-    if (props.ranking === 2) return '#989898'
-    if (props.ranking === 3) return '#B46100'
+    if (props.time !== 0) {
+      if (props.rank === 1) return '#D7C100'
+      if (props.rank === 2) return '#989898'
+      if (props.rank === 3) return '#B46100'
+    }
     return ''
   }};
 `
-
-interface RankElementProps {
-  rank: number
-}
 
 const RankElement = styled.div<RankElementProps>`
   display: flex;
@@ -189,11 +209,14 @@ const RankElement = styled.div<RankElementProps>`
   border-top: 1px solid #b5c3e9;
   align-items: center;
   background: ${(props) => {
-    if (props.rank === 1) return 'linear-gradient(90deg, #FFF 0%, #FFC329 100%)'
-    if (props.rank === 2)
-      return 'linear-gradient(90deg, rgba(255, 255, 255, 0.30) 0%, rgba(0, 0, 0, 0.23) 100%)'
-    if (props.rank === 3)
-      return 'linear-gradient(90deg, rgba(255, 255, 255, 0.30) 0%, rgba(255, 170, 70, 0.30) 100%)'
+    if (props.time !== 0) {
+      if (props.rank === 1)
+        return 'linear-gradient(90deg, #FFF 0%, #FFC329 100%)'
+      if (props.rank === 2)
+        return 'linear-gradient(90deg, rgba(255, 255, 255, 0.30) 0%, rgba(0, 0, 0, 0.23) 100%)'
+      if (props.rank === 3)
+        return 'linear-gradient(90deg, rgba(255, 255, 255, 0.30) 0%, rgba(255, 170, 70, 0.30) 100%)'
+    }
     return ''
   }};
 `
@@ -204,9 +227,11 @@ const RankerCount = styled.div<RankElementProps>`
   font-size: 20px;
   font-weight: 500;
   color: ${(props) => {
-    if (props.rank === 1) return '#D7C100'
-    if (props.rank === 2) return '#989898'
-    if (props.rank === 3) return '#B46100'
+    if (props.time !== 0) {
+      if (props.rank === 1) return '#D7C100'
+      if (props.rank === 2) return '#989898'
+      if (props.rank === 3) return '#B46100'
+    }
     return ''
   }};
 `
