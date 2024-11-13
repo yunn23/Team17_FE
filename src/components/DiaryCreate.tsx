@@ -4,6 +4,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '../api/axiosInstance'
 import Modal from './Modal'
 
+interface DiaryCreateProps {
+  isStart: boolean
+  setIsStart: React.Dispatch<React.SetStateAction<boolean>>
+}
+
 const postDiary = async (memo: string) => {
   const accessToken = localStorage.getItem('authToken')
 
@@ -21,7 +26,7 @@ const postDiary = async (memo: string) => {
   return response.data
 }
 
-const DiaryCreate = () => {
+const DiaryCreate: React.FC<DiaryCreateProps> = ({ isStart, setIsStart }) => {
   const queryClient = useQueryClient()
 
   const [newDiary, setNewDiary] = useState('')
@@ -33,6 +38,10 @@ const DiaryCreate = () => {
     onSuccess: () => {
       setNewDiary('')
       queryClient.invalidateQueries({ queryKey: ['diary'] })
+      if (isStart) {
+        queryClient.invalidateQueries({ queryKey: ['main'] })
+        setIsStart(true)
+      }
     },
   })
 

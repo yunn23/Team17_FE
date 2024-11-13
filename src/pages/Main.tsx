@@ -36,6 +36,7 @@ const Main = () => {
   const newDate = new Date()
   const [selectedDate, setSelectedDate] = useState(handleAdjustDate(newDate))
   const formattedDate = getCustomDate(selectedDate)
+  const [isStart, setIsStart] = useState(false)
 
   const today = handleAdjustDate(new Date())
 
@@ -130,13 +131,15 @@ const Main = () => {
         <ExerciseList
           selectedDate={selectedDate}
           exerciseList={exerciseList}
+          isStart={isStart}
           setTotalTime={setTotalTime}
           setExerciseList={setExerciseList}
+          setIsStart={setIsStart}
         />
       </Container>
       {isSameDay(selectedDate, today) && (
         <Container>
-          <DiaryCreate />
+          <DiaryCreate isStart={isStart} setIsStart={setIsStart} />
         </Container>
       )}
       <Container>
