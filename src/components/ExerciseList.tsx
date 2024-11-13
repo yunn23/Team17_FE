@@ -19,19 +19,15 @@ export interface Exercise {
 interface ExerciseListProps {
   selectedDate: Date
   exerciseList: Exercise[]
-  isStart: boolean
   setTotalTime: (time: number) => void
   setExerciseList: React.Dispatch<React.SetStateAction<Exercise[]>>
-  setIsStart: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const ExerciseList: React.FC<ExerciseListProps> = ({
   selectedDate,
   exerciseList,
-  isStart,
   setTotalTime,
   setExerciseList,
-  setIsStart,
 }) => {
   const queryClient = useQueryClient()
   const today = handleAdjustDate(new Date())
@@ -49,6 +45,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     null
   )
   const [activeMenuId, setActiveMenuId] = useState<number | null>(null)
+  const [isStart, setIsStart] = useState(false)
 
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -196,7 +193,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [exerciseList, isStart, setExerciseList, setIsStart])
+  }, [exerciseList, isStart, setExerciseList])
 
   const handleListMenuClick =
     (exerciseId: number) => (event: React.MouseEvent) => {
