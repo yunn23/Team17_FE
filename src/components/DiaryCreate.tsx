@@ -4,6 +4,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosInstance from '../api/axiosInstance'
 import Modal from './Modal'
 
+interface DiaryCreateProps {
+  isAnyActive: boolean
+}
+
 const postDiary = async (memo: string) => {
   const accessToken = localStorage.getItem('authToken')
 
@@ -21,7 +25,7 @@ const postDiary = async (memo: string) => {
   return response.data
 }
 
-const DiaryCreate = () => {
+const DiaryCreate: React.FC<DiaryCreateProps> = ({ isAnyActive }) => {
   const queryClient = useQueryClient()
 
   const [newDiary, setNewDiary] = useState('')
@@ -38,16 +42,22 @@ const DiaryCreate = () => {
   })
 
   const onSubmit = () => {
-    if (newDiary.trim() === '') {
-      handleOpenAlert('일기 텍스트가 비어있습니다\n일기를 작성해주세요!')
-      setNewDiary('')
-      return
+    if (isAnyActive) {
+      handleOpenAlert(
+        '운동이 실행 중 입니다\n운동 종료 후 일기를 작성해주세요!'
+      )
+    } else {
+      if (newDiary.trim() === '') {
+        handleOpenAlert('일기 텍스트가 비어있습니다\n일기를 작성해주세요!')
+        setNewDiary('')
+        return
+      }
+      if (newDiary.length > 500) {
+        handleOpenAlert('일기는 최대 500자까지 작성 가능합니다.')
+        return
+      }
+      mutationDiary.mutate(newDiary)
     }
-    if (newDiary.length > 500) {
-      handleOpenAlert('일기는 최대 500자까지 작성 가능합니다.')
-      return
-    }
-    mutationDiary.mutate(newDiary)
   }
 
   const handleCloseModal = () => {
