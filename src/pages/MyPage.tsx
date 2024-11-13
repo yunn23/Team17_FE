@@ -151,6 +151,9 @@ const MyPage = () => {
             * 운동 진행 중 화면을 벗어나더라도 사용자가 직접 종료하기 버튼을
             누르기 전까진 측정이 지속됩니다.
           </NoticeLine>
+          <NoticeLine>
+            * 출석 일수와 통계는 익일 새벽 3시에 갱신됩니다.
+          </NoticeLine>
         </NoticeContent>
       </NoticeWrapper>
       <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
@@ -193,6 +196,7 @@ const MyPage = () => {
 const MypageWrapper = styled.div`
   width: 100%;
   height: calc(100vh - 55px);
+  overflow-y: auto;
   padding: 20px;
   box-sizing: border-box;
   display: flex;
