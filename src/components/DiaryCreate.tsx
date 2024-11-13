@@ -33,6 +33,7 @@ const DiaryCreate = () => {
     onSuccess: () => {
       setNewDiary('')
       queryClient.invalidateQueries({ queryKey: ['diary'] })
+      queryClient.invalidateQueries({ queryKey: ['main'] })
     },
   })
 
