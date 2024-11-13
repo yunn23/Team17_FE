@@ -233,7 +233,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
       return
     }
     if (exerciseNew.length > 20) {
-      handleOpenAlert('운동 이름은 30자 이하로 입력해주세요')
+      handleOpenAlert('운동 이름은 20자 이하로 입력해주세요')
       setExerciseNew('')
       return
     }
