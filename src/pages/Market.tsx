@@ -102,7 +102,7 @@ const Market = () => {
 const MarketWrapper = styled.div`
   width: 100%;
   height: calc(100vh - 55px);
-  padding: 20px;
+  padding: 25px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;

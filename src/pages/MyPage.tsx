@@ -197,7 +197,7 @@ const MypageWrapper = styled.div`
   width: 100%;
   height: calc(100vh - 55px);
   overflow-y: auto;
-  padding: 20px;
+  padding: 30px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
