@@ -462,6 +462,7 @@ const AddExerciseName = styled.input`
   box-sizing: border-box;
   border: none;
   outline: none;
+  font-size: 15px;
 `
 
 const ModalBtnContainer = styled.div`

@@ -45,6 +45,7 @@ const MyPage = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
+    setNewName('')
   }
 
   const handleNameSubmit = () => {
@@ -348,6 +349,7 @@ const PutNickname = styled.input`
   box-sizing: border-box;
   border: none;
   outline: none;
+  font-size: 15px;
 `
 
 const NoticeWrapper = styled.div`
