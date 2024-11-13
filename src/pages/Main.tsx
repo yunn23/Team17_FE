@@ -38,8 +38,6 @@ const Main = () => {
   const formattedDate = getCustomDate(selectedDate)
 
   const today = handleAdjustDate(new Date())
-  // eslint-disable-next-line spaced-comment
-  //const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['main', formattedDate],
@@ -98,16 +96,6 @@ const Main = () => {
       setDiary(fetchedDiary)
     }
   }, [data, diaryData?.pages])
-
-  useEffect(() => {
-    if (activeExercise && activeExercise.startTime) {
-      const elapsedTime =
-        Date.now() - new Date(activeExercise.startTime).getTime()
-      setTotalTime((prevTime) =>
-        prevTime !== undefined ? prevTime + elapsedTime : elapsedTime
-      )
-    }
-  }, [activeExercise, exerciseList])
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search)
