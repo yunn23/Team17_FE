@@ -36,7 +36,6 @@ const Timer: React.FC<TimerProps> = ({
     },
   })
 
-  const [isActive, setIsActive] = useState(false)
   const [time, setTime] = useState(totalTime)
 
   useEffect(() => {
@@ -48,25 +47,6 @@ const Timer: React.FC<TimerProps> = ({
   }, [totalTime])
 
   useEffect(() => {
-    let interval: NodeJS.Timeout | undefined
-
-    if (isActive) {
-      interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 100)
-      }, 100)
-    } else {
-      clearInterval(interval)
-    }
-
-    return () => clearInterval(interval)
-  }, [isActive])
-
-  useEffect(() => {
-    setTime(0)
-    setIsActive(false)
-  }, [selectedDate])
-
-  useEffect(() => {
     if (typeof totalTime === 'number' && !Number.isNaN(totalTime)) {
       setTime(totalTime)
     } else {
@@ -75,7 +55,6 @@ const Timer: React.FC<TimerProps> = ({
   }, [totalTime, selectedDate])
 
   const handleStop = () => {
-    setIsActive(false)
     setExerciseList((prevList: Exercise[]) => {
       return prevList.map((exercise: Exercise) => ({
         ...exercise,

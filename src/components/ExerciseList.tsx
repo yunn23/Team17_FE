@@ -13,7 +13,7 @@ export interface Exercise {
   exerciseName: string
   exerciseTime: number
   isActive: boolean
-  startTime: string | null
+  startTime: string
 }
 
 interface ExerciseListProps {
@@ -45,6 +45,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     null
   )
   const [activeMenuId, setActiveMenuId] = useState<number | null>(null)
+  const [isStart, setIsStart] = useState(false)
 
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -74,6 +75,9 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const startExercise = useMutation({
     mutationFn: postStartExercise,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['main'] })
+    },
   })
 
   const deleteExercise = useMutation({
@@ -160,22 +164,36 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     }
   }
 
+  // 타이머 관련 로직
   useEffect(() => {
     const interval = setInterval(() => {
       setExerciseList((prevList) =>
-        prevList.map((exercise) =>
-          exercise.isActive
-            ? {
+        prevList.map((exercise) => {
+          if (exercise.isActive) {
+            let updateTime = exercise.exerciseTime
+            if (!isStart) {
+              const elapsedTime = exercise.startTime
+                ? Date.now() - new Date(exercise.startTime).getTime()
+                : 0
+              updateTime += elapsedTime
+              setIsStart(true)
+              return {
                 ...exercise,
-                exerciseTime: exercise.exerciseTime + 1000,
+                exerciseTime: updateTime,
               }
-            : exercise
-        )
+            }
+            return {
+              ...exercise,
+              exerciseTime: updateTime + 1000,
+            }
+          }
+          return exercise
+        })
       )
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [exerciseList, setExerciseList])
+  }, [exerciseList, isStart, setExerciseList])
 
   const handleListMenuClick =
     (exerciseId: number) => (event: React.MouseEvent) => {
@@ -215,7 +233,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
       return
     }
     if (exerciseNew.length > 20) {
-      handleOpenAlert('운동 이름은 30자 이하로 입력해주세요')
+      handleOpenAlert('운동 이름은 20자 이하로 입력해주세요')
       setExerciseNew('')
       return
     }

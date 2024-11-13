@@ -259,6 +259,7 @@ const AttendWrapper = styled.div`
   align-items: center;
   justify-content: center;
   padding: 35px 0;
+  margin-top: 5px;
 `
 
 const AttendIcon = styled.img`
@@ -277,7 +278,7 @@ const TextHighlight = styled.div`
 `
 
 const StaticWrapper = styled.div`
-  margin: 10px 0;
+  margin: 15px 0;
 `
 
 const StaticTitleContainer = styled.div`
@@ -348,7 +349,7 @@ const PutNickname = styled.input`
 const NoticeWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 25px;
+  margin-top: 30px;
 `
 
 const NoticeTitleContainer = styled.div`
