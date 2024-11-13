@@ -13,6 +13,31 @@ const App = () => {
     setupAxiosInterceptor(navigate)
   }, [navigate])
 
+  useEffect(() => {
+    let lastTouchEnd = 0
+
+    const handleTouchEnd = (event: TouchEvent) => {
+      const now = new Date().getTime()
+      if (now - lastTouchEnd <= 300) {
+        event.preventDefault()
+      }
+      lastTouchEnd = now
+    }
+
+    const preventPinchZoom = (event: TouchEvent) => {
+      if (event.touches.length > 1) {
+        event.preventDefault()
+      }
+    }
+    document.addEventListener('touchend', handleTouchEnd, { passive: false })
+    document.addEventListener('touchstart', preventPinchZoom)
+
+    return () => {
+      document.removeEventListener('touchend', handleTouchEnd)
+      document.removeEventListener('touchstart', preventPinchZoom)
+    }
+  }, [])
+
   return (
     <div className="App">
       <AppRoutes />

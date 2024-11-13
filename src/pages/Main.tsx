@@ -136,7 +136,7 @@ const Main = () => {
       </Container>
       {isSameDay(selectedDate, today) && (
         <Container>
-          <DiaryCreate />
+          <DiaryCreate isAnyActive={isAnyActive} />
         </Container>
       )}
       <Container>
