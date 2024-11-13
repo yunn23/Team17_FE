@@ -1,6 +1,5 @@
 import styled from '@emotion/styled'
 import { useEffect, useState } from 'react'
-// import { DateTime } from 'luxon'
 import { useLocation, useParams } from 'react-router'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -10,12 +9,13 @@ import getRanking from '../api/getRanking'
 import Loading from '../components/Loading'
 import Error from '../components/Error'
 import { formatTime } from '../components/Timer'
+import { handleAdjustDate } from './Main'
 
 const Ranking = () => {
   const location = useLocation()
   const teamName = location.state?.teamName
   const { groupId } = useParams()
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState(handleAdjustDate(new Date()))
   const resetHour = 3
   const getCustomDate = (date: Date) => {
     const adjustedDate = new Date(date)
@@ -31,7 +31,6 @@ const Ranking = () => {
     return `${year}${month}${day}`
   }
   const formattedDate = getCustomDate(selectedDate)
-  // const formattedDate = DateTime.fromJSDate(selectedDate).toFormat('yyyyMMdd')
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['ranking', groupId, formattedDate],
