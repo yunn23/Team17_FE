@@ -77,7 +77,7 @@ const Button = styled.button<ButtonProps>`
   border: 1px solid #768dcb;
   border-radius: 8px;
   padding: 3px 2px;
-  margin: 1px 3px;
+  margin: 1px 2px;
   cursor: pointer;
   font-size: 10px;
   transition:
