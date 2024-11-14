@@ -4,6 +4,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Client, IMessage } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
+import Modal from '../components/Modal'
 import { fetchInitialMessages, ChatMessage } from '../api/getChatting'
 import getMypage from '../api/getMypage'
 
@@ -29,6 +30,8 @@ const Chatting = () => {
   const [inputMessage, setInputMessage] = useState('')
   const stompClient = useRef<Client | null>(null)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
+  const [showModal, setShowModal] = useState(false)
+  const [modalMessage, setModalMessage] = useState('')
   const navigate = useNavigate()
   const location = useLocation()
   const teamName = location.state?.teamName
@@ -58,6 +61,20 @@ const Chatting = () => {
 
   const handlePrev = () => {
     navigate(-1)
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const message = e.target.value
+    if (message.length > 500) {
+      setModalMessage('채팅은 500자 이내로 작성해주세요.')
+      setShowModal(true)
+      return
+    }
+    setInputMessage(message)
+  }
+
+  const handleCloseModal = () => {
+    setShowModal(false)
   }
 
   useEffect(() => {
@@ -173,17 +190,26 @@ const Chatting = () => {
         <StyledInput
           type="text"
           value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
+          onChange={handleInputChange}
           onKeyPress={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               sendMessage()
               e.preventDefault()
             }
           }}
-          placeholder="your message..."
+          placeholder="메세지를 입력하세요"
         />
         <StyledButton onClick={sendMessage}>&gt;</StyledButton>
       </InputContainer>
+      {showModal && (
+        <Modal isOpen={showModal} onClose={handleCloseModal}>
+          <ModalTitle>알림</ModalTitle>
+          <ModalText>{modalMessage}</ModalText>
+          <ModalBtnContainer>
+            <CancelBtn onClick={handleCloseModal}>닫기</CancelBtn>
+          </ModalBtnContainer>
+        </Modal>
+      )}
     </PageWrapper>
   )
 }
@@ -197,10 +223,10 @@ const PageWrapper = styled.div`
   width: 100%;
   background-color: #f2f2f6;
   padding: 20px;
+  padding-bottom: 40px;
   box-sizing: border-box;
   height: calc(100vh - 55px);
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
 `
 
 const PageContainer = styled.div`
@@ -208,10 +234,12 @@ const PageContainer = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
+  justify-content: space-between;
   background-color: #ffffff;
   border-radius: 10px;
   margin: 20px 0px;
-  height: 75%;
+  height: 100%;
+  overflow: hidden;
 `
 const HeaderContainer = styled.div`
   display: flex;
@@ -246,6 +274,7 @@ const MessageBox = styled.div`
   width: 100%;
   flex-direction: column;
   overflow-y: auto;
+  flex-grow: 1;
 `
 const Box = styled.div`
   display: flex;
@@ -324,7 +353,7 @@ const StyledInput = styled.input`
   background-color: #f5f5f5;
   font-size: 16px;
   border: none;
-  border-radius: 20px;
+  border-radius: 10px;
   outline: none;
   margin-right: 10px;
 
@@ -336,7 +365,7 @@ const StyledInput = styled.input`
 const StyledButton = styled.button`
   padding: 6px 12px;
   border: none;
-  border-radius: 50%;
+  border-radius: 10px;
   color: gray;
   font-size: 20px;
   cursor: pointer;
@@ -371,4 +400,37 @@ const ErrorContainer = styled.div`
 
 const ErrorMessage = styled.p`
   font-size: 20px;
+`
+
+/* Modal */
+const ModalTitle = styled.div`
+  font-size: 20px;
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  box-sizing: border-box;
+`
+
+const ModalText = styled.p`
+  width: 96%;
+  color: #8e8e8e;
+  font-size: 12px;
+  padding: 0px 6px;
+  margin: 10px 0px;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+`
+
+const ModalBtnContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+`
+
+const CancelBtn = styled.div`
+  padding: 5px 15px;
+  color: #969393;
+  cursor: pointer;
 `
