@@ -112,10 +112,11 @@ const MarketTitle = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
+  font-size: 22px;
   margin-top: 10px;
   margin-bottom: 18px;
-  font-weight: 500;
+  font-weight: 600;
+  color: #444444;
 `
 
 const ProductWrapper = styled.div`

@@ -118,7 +118,6 @@ const Ranking = () => {
 const RankingWrapper = styled.div`
   width: 100%;
   height: calc(100vh - 55px);
-  background-color: #f2f2f6;
   padding: 20px;
   box-sizing: border-box;
   position: relative;
@@ -147,7 +146,7 @@ const Title = styled.div`
 const Space = styled.div``
 
 const RankContainer = styled.div`
-  border: 1px solid #b5c3e9;
+  border: 2px solid #b5c3e9;
   border-radius: 10px;
 `
 
@@ -174,7 +173,7 @@ const MyRankElement = styled.div<RankElementProps>`
   display: flex;
   font-size: 18px;
   padding: 10px 20px;
-  border: 1px solid #b5c3e9;
+  border: 2px solid #b5c3e9;
   border-radius: 10px;
   background: ${(props) => {
     if (props.time !== 0) {
