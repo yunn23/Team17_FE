@@ -272,7 +272,6 @@ const ModalButton = styled.button`
 `
 
 const NoGroupsMessage = styled.div`
-  
   font-size: 18px;
   justify-content: center;
   padding: 100px 0;
