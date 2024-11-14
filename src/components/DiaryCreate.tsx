@@ -125,6 +125,7 @@ const TextArea = styled.textarea`
   box-sizing: border-box;
   padding: 15px;
   height: 120px;
+  font-size: 15px;
 `
 const ModalText = styled.div`
   margin-top: 10px;
