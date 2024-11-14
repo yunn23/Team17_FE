@@ -163,7 +163,7 @@ const AddGroup = () => {
         {isModalOpen && (
           <Modal isOpen={isModalOpen} onClose={closeModal}>
             <ModalTitle>그룹 생성하기</ModalTitle>
-            <ModalText placeholder={modalMessage} />
+            <ModalText>{modalMessage}</ModalText>
             <ModalBtnContainer>
               <CancelBtn onClick={closeModal}>닫기</CancelBtn>
             </ModalBtnContainer>
@@ -283,8 +283,9 @@ const ModalTitle = styled.div`
   box-sizing: border-box;
 `
 
-const ModalText = styled.input`
+const ModalText = styled.p`
   width: 96%;
+  color: #8e8e8e;
   font-size: 12px;
   padding: 0px 6px;
   margin: 10px 0px;

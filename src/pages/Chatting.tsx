@@ -66,7 +66,7 @@ const Chatting = () => {
       if (!token) {
         return
       }
-      const socketUrl = `https://13.125.102.156:8080/api/team/chatting/websocket?access_token=${token}`
+      const socketUrl = `https://home-try.13.125.102.156.sslip.io/api/team/chatting/websocket?access_token=${token}`
       const socket = new SockJS(socketUrl)
 
       stompClient.current = new Client({
@@ -144,7 +144,7 @@ const Chatting = () => {
             >{`${msg.nickName}#${msg.memberId}`}</MessageInfo>
             <MessageContentContainer isOwn={isOwnMessage}>
               <MessageBubble isOwn={isOwnMessage}>{msg.message}</MessageBubble>
-              <TimeStamp isOwn={isOwnMessage}>
+              <TimeStamp>
                 {new Date(msg.chattedAt).toLocaleTimeString([], {
                   hour: '2-digit',
                   minute: '2-digit',
@@ -288,10 +288,10 @@ const MessageInfo = styled.div<MessageProps>`
   display: ${(props) => (props.isOwn ? 'none' : 'block')};
 `
 
-const TimeStamp = styled.span<MessageProps>`
+const TimeStamp = styled.span`
   font-size: 9px;
   color: #4a4a4a;
-  align-self: ${(props) => (props.isOwn ? 'flex-end' : 'flex-start')};
+  align-self: flex-end;
 `
 
 const DateSeparator = styled.div`

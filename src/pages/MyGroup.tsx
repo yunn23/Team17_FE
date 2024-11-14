@@ -198,6 +198,7 @@ const PageContainer = styled.div`
   display: flex;
   align-items: center;
   flex-direction: column;
+  height: 100%;
 `
 
 const PageTitle = styled.p`
@@ -271,12 +272,16 @@ const ModalButton = styled.button`
 `
 
 const NoGroupsMessage = styled.div`
+  
   font-size: 18px;
-  margin-top: 40px;
-  margin-bottom: 150px;
+  justify-content: center;
   padding: 100px 0;
   text-align: center;
   color: #8e8e8e;
+  height: 30%;
+  width: 100%;
+  display: flex;
+  align-items: center;
 `
 
 const LoadingContainer = styled.div`
