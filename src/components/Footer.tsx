@@ -123,7 +123,7 @@ const FooterWrapper = styled.div`
   padding: 5px 24px;
   box-sizing: border-box;
   border-radius: 30px 30px 0px 0px;
-  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px -3px 8px 0px rgba(0, 0, 0, 0.05);
 `
 
 const Container = styled.div`
