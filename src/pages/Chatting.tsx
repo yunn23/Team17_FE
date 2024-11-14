@@ -76,6 +76,9 @@ const Chatting = () => {
   const handleCloseModal = () => {
     setShowModal(false)
   }
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
   useEffect(() => {
     const connectWebSocket = () => {
@@ -136,6 +139,10 @@ const Chatting = () => {
     })
 
     setInputMessage('')
+    setTimeout(
+      () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }),
+      100
+    )
   }
 
   const renderMessages = (message: ChatMessage[]) => {
