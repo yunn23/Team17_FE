@@ -29,8 +29,7 @@ const Footer = () => {
   const handleNavigation = (target: string) => {
     if (isAnyActive) {
       setIsWarningOpen(true)
-    }
-    else {
+    } else {
       navigate(target)
     }
   }
