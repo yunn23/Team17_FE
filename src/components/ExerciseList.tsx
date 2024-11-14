@@ -49,6 +49,10 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const menuRef = useRef<HTMLDivElement>(null)
 
+  const activeExercise = exerciseList.some((exercise) => exercise.isActive)
+  const activeExercises = exerciseList.find((exercise) => exercise.isActive)
+  const activeExerciseId = activeExercises ? activeExercises.exerciseId : null
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -93,15 +97,16 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
     event: React.MouseEvent
   ) => {
     event.stopPropagation()
-    // eslint-disable-next-line no-console
-    console.log('Delete 버튼 클릭')
     setDeletedExerciseId(exerciseId)
     setDeletedExerciseName(exerciseName)
     setIsDeleteModalOpen(true)
   }
 
   const handleConfirmDelete = async () => {
-    if (deletedExerciseId !== null) {
+    if (deletedExerciseId === activeExerciseId) {
+      handleOpenAlert('실행중인 운동은 삭제할 수 없습니다')
+      setIsDeleteModalOpen(false)
+    } else if (deletedExerciseId !== null) {
       await deleteExercise.mutateAsync(deletedExerciseId)
       setIsDeleteModalOpen(false)
       setDeletedExerciseId(null)
@@ -132,8 +137,6 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const handleExerciseClick = async (exerciseId: number) => {
     if (!isToday) return
-
-    const activeExercise = exerciseList.some((exercise) => exercise.isActive)
 
     // 다른 운동을 하고 있는 경우, 아무것도 하지 않음
     if (activeExercise) return
@@ -228,7 +231,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
 
   const handleExerciseSubmit = async () => {
     if (!exerciseNew.trim()) {
-      handleOpenAlert()
+      handleOpenAlert('올바른 운동 이름을 입력해주세요')
       setExerciseNew('')
       return
     }
@@ -331,7 +334,7 @@ const ExerciseList: React.FC<ExerciseListProps> = ({
         </ModalBtnContainer>
       </Modal>
       <Modal isOpen={isAlertModalOpen} onClose={handleCancelAlert}>
-        <AddTitle>운동이름 오류</AddTitle>
+        <AddTitle>운동 관련 오류</AddTitle>
         <ModalBody>
           <ModalBodyLine>{alertMessage}</ModalBodyLine>
         </ModalBody>
