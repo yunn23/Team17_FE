@@ -156,7 +156,7 @@ const DateContainer = styled.div`
 `
 
 const EntireRank = styled.div`
-  height: 400px;
+  height: 435px;
   overflow-y: auto;
 `
 
@@ -231,7 +231,7 @@ const RankerCount = styled.div<RankElementProps>`
       if (props.rank === 2) return '#989898'
       if (props.rank === 3) return '#B46100'
     }
-    return ''
+    return '#4a4a4a'
   }};
 `
 
@@ -239,6 +239,7 @@ const RankerName = styled.div`
   padding: 10px;
   margin-left: 25px;
   font-size: 18px;
+  color: #4a4a4a;
 `
 
 const RankerTime = styled.div`
