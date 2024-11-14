@@ -21,7 +21,9 @@ const DateSelect: React.FC<DateSelectProps> = ({
   const [isCalendarOpen, setIsCalendarOpen] = useState<boolean>(false)
   const calendarRef = useRef<HTMLDivElement>(null)
   const today = handleAdjustDate(new Date())
+  const firstDate = handleAdjustDate(new Date('2024-09-01'))
   const isToday = isSameDay(selectedDate, today)
+  const isFirstDate = isSameDay(selectedDate, firstDate)
 
   const handlePrev = () => {
     setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() - 1)))
@@ -61,7 +63,9 @@ const DateSelect: React.FC<DateSelectProps> = ({
   return (
     <DateSelectWrapper>
       <DateSelectContainer>
-        <DateSelecterLeft onClick={handlePrev}>{'<'}</DateSelecterLeft>
+        <DateSelecterLeft isFirstDate={isFirstDate} onClick={handlePrev}>
+          {'<'}
+        </DateSelecterLeft>
         <DateSelection onClick={handleDateClick}>{formattedDate}</DateSelection>
         <DateSelecterRight isToday={isToday} onClick={handleNext}>
           {'>'}
@@ -74,7 +78,10 @@ const DateSelect: React.FC<DateSelectProps> = ({
             selected={selectedDate}
             onSelect={handleDateSelect}
             locale={ko}
-            disabled={(date) => isAfter(date, today)}
+            disabled={[
+              { before: new Date('2024-09-01') },
+              (date) => isAfter(date, today),
+            ]}
             today={today}
           />
         </CalendarContainer>
@@ -95,10 +102,11 @@ const DateSelectContainer = styled.div`
   position: relative;
 `
 
-const DateSelecterLeft = styled.div`
+const DateSelecterLeft = styled.div<{ isFirstDate: boolean }>`
   font-size: 25px;
   cursor: pointer;
   font-weight: 500;
+  visibility: ${({ isFirstDate }) => (isFirstDate ? 'hidden' : 'visible')};
 `
 
 const DateSelecterRight = styled.div<{ isToday: boolean }>`
