@@ -45,6 +45,7 @@ const MyPage = () => {
 
   const handleCloseModal = () => {
     setIsModalOpen(false)
+    setNewName('')
   }
 
   const handleNameSubmit = () => {
@@ -197,20 +198,21 @@ const MypageWrapper = styled.div`
   width: 100%;
   height: calc(100vh - 55px);
   overflow-y: auto;
-  padding: 20px;
+  padding: 30px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  color: #444444;
 `
 
 const MypageTitle = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
+  font-size: 22px;
   margin-top: 10px;
-  margin-bottom: 18px;
-  font-weight: 500;
+  margin-bottom: 30px;
+  font-weight: 600;
 `
 
 const PersonalWrapper = styled.div`
@@ -348,6 +350,7 @@ const PutNickname = styled.input`
   box-sizing: border-box;
   border: none;
   outline: none;
+  font-size: 15px;
 `
 
 const NoticeWrapper = styled.div`
