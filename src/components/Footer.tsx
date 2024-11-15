@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Modal from './Modal'
 
@@ -12,18 +12,19 @@ const Footer = () => {
     'activeExerciseId'
   )
 
-  useEffect(() => {
-    if (isAnyActive) {
-      const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-        event.preventDefault()
-      }
-      window.addEventListener('beforeunload', handleBeforeUnload)
-      return () => {
-        window.removeEventListener('beforeunload', handleBeforeUnload)
-      }
-    }
-    return undefined
-  }, [isAnyActive])
+  // 운동 중 화면 이동시 이전 화면으로 되돌리는 로직 임시 주석처리
+  // useEffect(() => {
+  //   if (isAnyActive) {
+  //     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+  //       event.preventDefault()
+  //     }
+  //     window.addEventListener('beforeunload', handleBeforeUnload)
+  //     return () => {
+  //       window.removeEventListener('beforeunload', handleBeforeUnload)
+  //     }
+  //   }
+  //   return undefined
+  // }, [isAnyActive])
 
   const handleNavigation = (target: string) => {
     if (isAnyActive) {
@@ -35,7 +36,7 @@ const Footer = () => {
 
   const handleWarningClose = () => {
     setIsWarningOpen(false)
-    window.history.back()
+    // window.history.back()
   }
 
   return (
@@ -61,7 +62,10 @@ const Footer = () => {
             나의 그룹
           </NavText>
         </Link>
-        <Link to="/searchgroup" onClick={() => '/searchgroup'}>
+        <Link
+          to="/searchgroup"
+          onClick={() => handleNavigation('/searchgroup')}
+        >
           <NavIcon
             isActive={location.pathname === '/searchgroup'}
             className="material-symbols-outlined"
@@ -96,7 +100,7 @@ const Footer = () => {
       <Modal isOpen={isWarningOpen} onClose={handleWarningClose}>
         <ModalBody>
           <ModalBodyLine>
-            운동 진행중 페이지에서 벗어나 타이머에 오차가 발생할 수 있습니다.{' '}
+            운동 종료 버튼을 누르기 전까지 운동이 지속됩니다{' '}
             <span style={{ color: '#6d86cb' }}>운동을 종료해주세요</span>
           </ModalBodyLine>
         </ModalBody>
@@ -159,9 +163,9 @@ const DoneBtn = styled.div`
 `
 
 const ModalBody = styled.div`
-  margin-left: 10px;
+  margin-left: 20px;
   margin-top: 20px;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
   margin-right: 15px;
   display: flex;
   flex-direction: column;
@@ -172,6 +176,7 @@ const ModalBodyLine = styled.div`
   margin-top: 5px;
   font-size: 15px;
   line-height: 1.6;
+  white-space: pre-wrap;
 `
 
 export default Footer

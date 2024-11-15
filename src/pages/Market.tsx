@@ -145,15 +145,16 @@ const ProductPhoto = styled.img`
 `
 
 const ProductInfo = styled.div`
-  margin-left: 15px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   width: 65%;
+  margin: 10px;
+  position: relative;
 `
 
 const ProductName = styled.div`
-  margin-top: 20px;
+  margin-top: 5px;
 `
 
 const ProductSite = styled.div`
@@ -163,9 +164,10 @@ const ProductSite = styled.div`
 `
 
 const ProductPrice = styled.div`
-  margin-top: 10px;
   align-self: flex-end;
-  margin-right: 20px;
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
 `
 
 export default Market

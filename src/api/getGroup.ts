@@ -49,15 +49,18 @@ export interface MyGroupResponse {
 
 export const getGroup = async (
   page = 0,
-  size = 8,
+  size = 16,
   sort = 'teamId,asc',
   searchTerm = '',
   activeFilters: number[] = []
 ): Promise<TeamResponse> => {
-  let queryString = `page=${page}&size=${size}&sort=${sort}`
+  let queryString = `page=${page}&size=${size}`
 
   if (searchTerm) {
     queryString += `&teamName=${encodeURIComponent(searchTerm)}`
+  }
+  if (sort) {
+    queryString += `&sortField=${sort}`
   }
 
   if (activeFilters.length > 0) {
@@ -71,7 +74,7 @@ export const getGroup = async (
 
 export const getMyGroup = async (
   page = 0,
-  size = 8,
+  size = 16,
   sort = 'teamId,asc'
 ): Promise<TeamResponse> => {
   try {
