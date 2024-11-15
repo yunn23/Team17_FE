@@ -199,6 +199,7 @@ const DiaryContent = styled.div`
   padding: 15px;
   font-size: 14px;
   color: #555454;
+  white-space: pre-line;
 `
 
 const NoDiaryMessage = styled.div`
