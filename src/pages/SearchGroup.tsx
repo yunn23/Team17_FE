@@ -1,7 +1,7 @@
-import React, { useState, ChangeEvent, useEffect } from 'react'
+import React, { useState, ChangeEvent, useEffect, useRef } from 'react'
 import styled from '@emotion/styled'
 import { useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { QueryFunctionContext, useInfiniteQuery } from '@tanstack/react-query'
 import { getGroup, Team, TeamResponse } from '../api/getGroup'
 import GroupListContainer from '../components/GroupListContainer'
 import GroupModal from '../components/GroupModal'
@@ -23,26 +23,66 @@ const Loading = () => (
 const SearchGroup = () => {
   const [activeFilters, setActiveFilters] = useState<number[]>([])
   const [searchTerm, setSearchTerm] = useState('')
-  const [initialLoad, setInitialLoad] = useState(true)
   const [modalType, setModalType] = useState('')
   const [selectedGroup, setSelectedGroup] = useState<Team | undefined>(
     undefined
   )
+  const [initialLoad, setInitialLoad] = useState(true)
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
+  const fetchMoreRef = useRef<HTMLDivElement>(null)
+  const observerRef = useRef<IntersectionObserver | null>(null)
 
   const {
-    isLoading: groupsLoading,
-    isError: groupsError,
-    data: groups,
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     refetch,
-  } = useQuery<TeamResponse, Error, Team[]>({
+  } = useInfiniteQuery<TeamResponse, Error>({
     queryKey: ['groupPage', searchTerm, activeFilters],
-    queryFn: () => getGroup(0, 8, 'asc', searchTerm, activeFilters),
-    select: (response: TeamResponse) => response.content,
-    refetchOnWindowFocus: false,
+    queryFn: async ({ pageParam = 0 }: QueryFunctionContext) => {
+      const page = typeof pageParam === 'number' ? pageParam : 0
+      return getGroup(page, 16, 'teamId,asc', searchTerm, activeFilters)
+    },
+    getNextPageParam: (lastPage: TeamResponse) => {
+      return !lastPage.last ? lastPage.pageable.pageNumber + 1 : undefined
+    },
     enabled: initialLoad,
+    refetchOnWindowFocus: false,
+    initialPageParam: 0,
   })
+
+  const groups = data?.pages.flatMap((page) => page.content) || []
+
+  useEffect(() => {
+    if (!fetchMoreRef.current) return undefined
+    const fetchMoreElement = fetchMoreRef.current
+
+    const options = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1,
+    }
+
+    observerRef.current = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage()
+        }
+      })
+    }, options)
+
+    observerRef.current.observe(fetchMoreElement)
+
+    return (): void => {
+      if (observerRef.current && fetchMoreElement) {
+        observerRef.current.unobserve(fetchMoreElement)
+      }
+    }
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage])
 
   useEffect(() => {
     if (initialLoad) {
@@ -104,8 +144,8 @@ const SearchGroup = () => {
     navigate('/addGroup')
   }
 
-  if (groupsLoading) return <Loading />
-  if (groupsError) return <Error />
+  if (isLoading) return <Loading />
+  if (isError) return <Error />
 
   return (
     <PageWrapper>
@@ -121,11 +161,16 @@ const SearchGroup = () => {
           onToggleFilter={toggleFilter}
         />
         {groups && (
-          <GroupListContainer
-            groups={groups}
-            searchTerm={searchTerm}
-            onCardClick={handleGroupClick}
-          />
+          <>
+            <GroupListContainer
+              groups={groups}
+              searchTerm={searchTerm}
+              onCardClick={handleGroupClick}
+            />
+            <LoadingTrigger ref={fetchMoreRef}>
+              {isFetchingNextPage && <Loading />}
+            </LoadingTrigger>
+          </>
         )}
         {modalType && (
           <GroupModal
@@ -214,6 +259,15 @@ const ErrorContainer = styled.div`
 
 const ErrorMessage = styled.p`
   font-size: 20px;
+`
+
+const LoadingTrigger = styled.div`
+  height: 20px;
+  margin: 20px 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `
 
 export default SearchGroup
