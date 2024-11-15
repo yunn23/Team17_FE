@@ -87,6 +87,7 @@
 - [와이어 프레임](https://www.figma.com/design/TsCneAgt5ONEKWAiArCA6u/%EC%B9%B4%ED%85%8C%EC%BA%A0-%ED%99%88%ED%8A%B8%EB%9D%BC%EC%9D%B4-%EC%99%80%EC%9D%B4%EC%96%B4%ED%94%84%EB%A0%88%EC%9E%84_%EC%BF%A0%ED%82%A4zip?node-id=130-2033&t=idsBFD1mOYhPFPFk-1)
 - ERD
   <img width="1082" alt="hometry_erd" src="https://github.com/user-attachments/assets/305e8114-5eb8-4ec1-b9c1-b80af45f9d92">
+- [노션 위클리보드 - 공동 문서](https://quickest-asterisk-75d.notion.site/7b8ead85e5bc495a949fafeb01846587?v=aae07c49cc774787981f9752728a99fd)
 
 <br />
 
@@ -168,7 +169,6 @@
 | ![hometry1_main1](https://github.com/user-attachments/assets/9fc74cd4-ab70-4327-b08f-82acc68e64fd)  |  ![hometry3_mygroup](https://github.com/user-attachments/assets/7bdaa928-2969-4d58-92fb-8d03930e30ac)  |  ![hometry6_searchgroup](https://github.com/user-attachments/assets/fa757def-2a30-4c73-b15b-ec3afd1e9d62)  |  ![hometry8_market](https://github.com/user-attachments/assets/b14ea3df-707c-47f8-a943-d4dac841e34f)  |  ![hometry9_mypage](https://github.com/user-attachments/assets/72ac9119-dcbc-4355-a8fd-61af96ca4a6a)  |
 | ![hometry2_main2](https://github.com/user-attachments/assets/bafb30f9-6414-4ccf-bdea-7e9de334a7a1)  |  ![hometry4_ranking](https://github.com/user-attachments/assets/882128a9-a960-40c7-8c91-e71811327c96)  |  ![hometry7_addgroup](https://github.com/user-attachments/assets/3239c918-3b1c-4180-b654-42fd9a155254)  |    |    |
 |    |  ![hometry5_chat](https://github.com/user-attachments/assets/956d16fc-6fc7-4977-85b7-c5c0820cc05b)  |    |    |    |
-|    |    |    |    |    |
 
 
 
