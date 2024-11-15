@@ -71,7 +71,7 @@ const TagFilter: React.FC<TagFilterProps> = ({
 export default TagFilter
 
 const Button = styled.button<ButtonProps>`
-  width: 36px;
+  width: 34px;
   background-color: ${({ active }) => (active ? '#B5C3E9' : 'white')};
   color: ${({ active }) => (active ? 'white' : '#768DCB')};
   border: 1px solid #768dcb;

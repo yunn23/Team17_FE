@@ -52,8 +52,8 @@ const DiaryCreate: React.FC<DiaryCreateProps> = ({ isAnyActive }) => {
         setNewDiary('')
         return
       }
-      if (newDiary.length > 500) {
-        handleOpenAlert('일기는 최대 500자까지 작성 가능합니다.')
+      if (newDiary.length > 255) {
+        handleOpenAlert('일기는 최대 255자까지 작성 가능합니다.')
         return
       }
       mutationDiary.mutate(newDiary)

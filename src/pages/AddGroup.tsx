@@ -90,6 +90,11 @@ const AddGroup = () => {
       setModalOpen(true)
       return
     }
+    if (inputs.comment && inputs.comment.length > 255) {
+      setModalMessage('그룹 설명은 255자 이내로 작성해주세요.')
+      setModalOpen(true)
+      return
+    }
 
     const groupData = {
       teamName: inputs.teamname,
@@ -122,53 +127,57 @@ const AddGroup = () => {
           <PageTitle>그룹 만들기</PageTitle>
         </HeaderContainer>
         <FormContainer onSubmit={handleSubmit}>
-          <InputField
-            type="text"
-            name="teamname"
-            placeholder="그룹명을 적어주세요"
-            value={inputs.teamname}
-            onChange={handleChange}
-          />
-          <InputField
-            type="text"
-            name="password"
-            placeholder="비밀번호 (선택사항)"
-            value={inputs.password}
-            onChange={handleChange}
-          />
-          <InputField
-            type="text"
-            name="participant"
-            placeholder="모집인원"
-            value={inputs.participant}
-            onChange={handleChange}
-          />
-          <FieldName>그룹 설명</FieldName>
-          <TextArea
-            name="comment"
-            placeholder="그룹에 대한 자세한 설명을 작성하세요"
-            rows={4}
-            value={inputs.comment}
-            onChange={handleChange}
-          />
-          <FieldName>태그</FieldName>
-          <TagFilter
-            activeFilters={activeFilters}
-            onToggleFilter={toggleFilter}
-          />
+          <ContentWrapper>
+            <InputField
+              type="text"
+              name="teamname"
+              placeholder="그룹명을 적어주세요"
+              value={inputs.teamname}
+              onChange={handleChange}
+            />
+            <InputField
+              type="text"
+              name="password"
+              placeholder="비밀번호 (선택사항)"
+              value={inputs.password}
+              onChange={handleChange}
+            />
+            <InputField
+              type="text"
+              name="participant"
+              placeholder="모집인원"
+              value={inputs.participant}
+              onChange={handleChange}
+            />
+            <FieldName>그룹 설명</FieldName>
+            <TextArea
+              name="comment"
+              placeholder="그룹에 대한 자세한 설명을 작성하세요"
+              rows={4}
+              value={inputs.comment}
+              onChange={handleChange}
+            />
+            <FieldName>태그</FieldName>
+            <TagFilter
+              activeFilters={activeFilters}
+              onToggleFilter={toggleFilter}
+            />
+          </ContentWrapper>
           <SubmitButton type="submit" onClick={handleSubmit}>
             생성하기
           </SubmitButton>
         </FormContainer>
-        {isModalOpen && (
-          <Modal isOpen={isModalOpen} onClose={closeModal}>
-            <ModalTitle>그룹 생성하기</ModalTitle>
-            <ModalText>{modalMessage}</ModalText>
-            <ModalBtnContainer>
-              <CancelBtn onClick={closeModal}>닫기</CancelBtn>
-            </ModalBtnContainer>
-          </Modal>
-        )}
+        <ButtonWrapper>
+          {isModalOpen && (
+            <Modal isOpen={isModalOpen} onClose={closeModal}>
+              <ModalTitle>그룹 생성하기</ModalTitle>
+              <ModalText>{modalMessage}</ModalText>
+              <ModalBtnContainer>
+                <CancelBtn onClick={closeModal}>닫기</CancelBtn>
+              </ModalBtnContainer>
+            </Modal>
+          )}
+        </ButtonWrapper>
       </PageContainer>
     </PageWrapper>
   )
@@ -185,18 +194,20 @@ const PageWrapper = styled.div`
   padding: 20px;
   box-sizing: border-box;
   height: calc(100vh - 55px);
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
 `
 
 const PageContainer = styled.div`
-  padding: 10px 0px 20px 0px;
+  padding: 10px 0px 10px 0px;
   display: flex;
   align-items: center;
   flex-direction: column;
+  justify-content: space-between;
   background-color: #ffffff;
   border-radius: 10px;
   margin: 20px 0px;
+  height: 100%;
+  overflow: hidden;
 `
 const HeaderContainer = styled.div`
   display: flex;
@@ -226,8 +237,17 @@ const PageTitle = styled.p`
 
 /* Form */
 const FormContainer = styled.div`
+  flex-grow: 1;
+  height: 100%;
+  overflow-y: auto;
   flex-direction: column;
   padding: 0 14px;
+  display: flex;
+  margin-top: 10px;
+`
+
+const ContentWrapper = styled.div`
+  flex-grow: 8;
 `
 
 const FieldName = styled.div`
@@ -260,14 +280,22 @@ const TextArea = styled.textarea`
   resize: none;
 `
 
+const ButtonWrapper = styled.div`
+  flex-grow: 2;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
 const SubmitButton = styled.button`
   padding: 10px 0;
+  margin-bottom: 20px;
   background-color: #b5c3e9;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 15px;
   width: 100%;
   &:hover {
     background-color: #7a98e8;
